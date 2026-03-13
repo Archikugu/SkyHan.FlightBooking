@@ -1,0 +1,70 @@
+<header>
+    <div class="header-top">
+        <div class="container custom-container">
+            <div class="row">
+                <div class="col-xl-4">
+                    <div class="header-top-left">
+                        <a href="#"><i class="fa-solid fa-plane"></i> Güncel Seyahat Kuralları ve Uyarılar</a>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <div class="header-top-right">
+                        <ul>
+                            <li><a href="contact.html">Kurumsal Şirketler</a></li>
+                            <li><a href="contact.html">Miles&amp;Smiles</a></li>
+                            <li><a href="about.html"><i class="fa-solid fa-comments"></i>Geri Bildirim</a></li>
+                            <li><a href="#"><i class="fa-solid fa-magnifying-glass"></i>Arama</a></li>
+                            <li><a href="contact.html"><i class="fa-solid fa-dollar-sign"></i>Para Birimi</a></li>
+                            <li><a href="booking-list.html"><i class="fa-solid fa-earth-asia"></i>TR - TRY</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sticky-header" class="menu-area transparent-header">
+        <div class="container custom-container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mobile-nav-toggler"><i class="fas fa-bars"></i></div>
+                    <div class="menu-wrap">
+                        <nav class="menu-nav">
+                            <div class="logo"><a asp-controller="Home" asp-action="Index"><img src="~/geair/assets/img/logo/SkyHanLogo.png" alt=""></a></div>
+                            @await Component.InvokeAsync("Navbar")
+                            <div class="header-action d-none d-md-block">
+                                <ul>
+                                    <li class="country"><a href="#">TRY <img src="~/geair/assets/img/icon/turkey.png" alt="" style="border-radius: 50%; object-fit: cover; width: 24px; height: 24px;"></a></li>
+                                    <li class="question"><a href="contact.html">?</a></li>
+                                    <li class="header-btn"><a href="contact.html" class="btn">Kayıt Ol</a></li>
+                                    <li class="header-btn sign-in"><a href="contact.html" class="btn">Giriş Yap</a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                    <!-- Mobile Menu  -->
+                    <div class="mobile-menu">
+                        <nav class="menu-box">
+                            <div class="close-btn"><i class="fa-solid fa-xmark"></i></div>
+                            <div class="nav-logo"><a asp-controller="Home" asp-action="Index"><img src="~/geair/assets/img/logo/logo_02.png" alt="" title=""></a>
+                            </div>
+                            <div class="menu-outer">
+                                <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
+                            </div>
+                            <div class="social-links">
+                                <ul class="clearfix">
+                                    <li><a href="#"><span class="fab fa-twitter"></span></a></li>
+                                    <li><a href="#"><span class="fab fa-facebook-f"></span></a></li>
+                                    <li><a href="#"><span class="fab fa-pinterest-p"></span></a></li>
+                                    <li><a href="#"><span class="fab fa-instagram"></span></a></li>
+                                    <li><a href="#"><span class="fab fa-youtube"></span></a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="menu-backdrop"></div>
+                    <!-- End Mobile Menu -->
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

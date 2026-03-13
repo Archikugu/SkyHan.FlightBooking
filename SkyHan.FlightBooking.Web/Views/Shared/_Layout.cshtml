@@ -1,0 +1,23 @@
+<!doctype html>
+<html class="no-js" lang="tr">
+<head>
+    @await Component.InvokeAsync("Head")
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+    <button class="scroll-top scroll-to-target" data-target="html">
+        <i class="fas fa-angle-up"></i>
+    </button>
+
+    @await Component.InvokeAsync("Header")
+
+    <main>
+        @RenderBody()
+    </main>
+
+    @await Component.InvokeAsync("Footer")
+    @await Component.InvokeAsync("Scripts")
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
