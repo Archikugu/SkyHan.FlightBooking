@@ -1,0 +1,367 @@
+/* ── Variables ── */
+:root {
+    --navy: #0d1b3e;
+    --navy-mid: #162550;
+    --amber: #f5c518;
+    --amber-deep: #e0af10;
+    --amber-soft: rgba(245,197,24,.13);
+    --amber-border: rgba(245,197,24,.3);
+    --bg-section: #0a1532; /* Deep themed navy background */
+    --white: #ffffff;
+    --text-body: #a2b0ce; /* Lighter text for dark backgrounds */
+    --border: rgba(255,255,255,.05); /* subtlety updated for dark bg */
+    --shadow-sm: 0 2px 16px rgba(13,27,62,.07);
+    --shadow-hover: 0 16px 40px rgba(13,27,62,.16);
+    --radius: 18px;
+}
+
+/* ── Section ── */
+.service-area {
+    background: var(--bg-section);
+    padding: 88px 0 96px;
+    font-family: inherit; /* use global site font */
+    position: relative;
+    overflow: hidden;
+    /* Soft border separator */
+    border-bottom: 2px solid var(--amber); /* thematic border instead of gray */
+}
+
+    /* Subtle dot-grid background texture */
+    .service-area::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size: 28px 28px;
+        pointer-events: none;
+    }
+
+/* ── Header row ── */
+.svc-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    gap: 20px;
+    position: relative;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+
+.svc-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 12px;
+}
+
+    .svc-eyebrow::before {
+        content: '';
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--amber);
+    }
+
+.svc-main-title {
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 800;
+    color: var(--white); /* White text for contrast against dark background */
+    line-height: 1.2;
+    margin: 0 0 8px;
+    letter-spacing: -.02em;
+}
+
+.svc-desc {
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-body);
+    margin: 0;
+}
+
+/* ── Arrow buttons ── */
+.svc-arrows {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.svc-arrow-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    transition: all .22s ease;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+    .svc-arrow-btn:hover {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: var(--amber);
+        box-shadow: 0 4px 16px rgba(13,27,62,.22);
+    }
+
+    .svc-arrow-btn:active {
+        transform: scale(.93);
+    }
+
+/* ── Slider track ── */
+.svc-slider-outer {
+    position: relative;
+    overflow: hidden;
+}
+
+    /* Fade masks removed so left and right cards are clear */
+
+.svc-slider-track {
+    display: flex;
+    gap: 20px;
+    transition: transform .45s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+    padding: 12px 4px 20px;
+    /* allow cards to overflow for shadow visibility */
+    margin: -12px -4px -20px;
+}
+
+/* ── Service Card ── */
+.svc-card {
+    flex: 0 0 220px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 36px 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform .3s cubic-bezier(.22,.68,0,1.2), box-shadow .3s ease, border-color .3s ease;
+    position: relative;
+    cursor: default;
+    user-select: none;
+}
+
+    .svc-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0,0,0,.3);
+        border-color: rgba(255,255,255,.12);
+    }
+
+    /* Top amber line */
+    .svc-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 24px;
+        right: 24px;
+        height: 3px;
+        border-radius: 0 0 6px 6px;
+        background: linear-gradient(90deg, var(--amber), var(--amber-deep));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .32s ease;
+    }
+
+    .svc-card:hover::after {
+        transform: scaleX(1);
+    }
+
+/* ── Icon ── */
+.svc-card-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: var(--amber-soft);
+    border: 1.5px solid var(--amber-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    transition: transform .3s cubic-bezier(.22,.68,0,1.2), background .3s ease, border-color .3s ease;
+}
+
+    .svc-card-icon i {
+        font-size: 28px;
+        color: var(--navy);
+        transition: color .3s ease, transform .3s ease;
+    }
+
+.svc-card:hover .svc-card-icon {
+    transform: scale(1.1);
+    background: var(--amber);
+    border-color: var(--amber-deep);
+}
+
+    .svc-card:hover .svc-card-icon i {
+        color: var(--navy);
+        transform: scale(1.05);
+    }
+
+/* ── Card title ── */
+.svc-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.25;
+    margin: 0 0 auto;
+    letter-spacing: .02em;
+}
+
+/* ── Card List (Added from original design) ── */
+.svc-card-list {
+    margin-top: 15px;
+    text-align: left;
+    width: 100%;
+}
+
+.svc-card-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.svc-card-list li {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-body);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    line-height: 1.4;
+}
+
+.svc-card-list li i {
+    color: var(--amber); /* matching theme */
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+/* ── Plus button ── */
+.svc-plus-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    margin-top: 22px;
+    cursor: pointer;
+    transition: all .25s cubic-bezier(.22,.68,0,1.2);
+    box-shadow: 0 2px 8px rgba(13,27,62,.06);
+}
+
+.svc-card:hover .svc-plus-btn {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--amber);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 6px 18px rgba(13,27,62,.25);
+}
+
+/* ── Dots indicator ── */
+.svc-dots {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 36px;
+}
+
+.svc-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25); /* white translucent for dark bg */
+    cursor: pointer;
+    transition: all .25s ease;
+    border: none;
+}
+
+    .svc-dot.active {
+        background: var(--amber); /* matching theme amber */
+        width: 22px;
+        border-radius: 4px;
+    }
+
+/* ── Drag cursor ── */
+.svc-slider-outer.is-dragging {
+    cursor: grabbing;
+}
+
+    .svc-slider-outer.is-dragging .svc-card {
+        pointer-events: none;
+    }
+
+/* ── Stagger on load ── */
+.svc-card {
+    opacity: 0;
+    animation: card-in .5s ease forwards;
+}
+
+    .svc-card:nth-child(1) {
+        animation-delay: .04s;
+    }
+
+    .svc-card:nth-child(2) {
+        animation-delay: .1s;
+    }
+
+    .svc-card:nth-child(3) {
+        animation-delay: .16s;
+    }
+
+    .svc-card:nth-child(4) {
+        animation-delay: .22s;
+    }
+
+    .svc-card:nth-child(5) {
+        animation-delay: .28s;
+    }
+
+    .svc-card:nth-child(6) {
+        animation-delay: .34s;
+    }
+
+    .svc-card:nth-child(7) {
+        animation-delay: .40s;
+    }
+
+@keyframes card-in {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* keep hover transform dominant */
+.svc-card:hover {
+    transform: translateY(-8px) !important;
+}

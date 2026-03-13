@@ -1,0 +1,120 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="~/geair/assets/css/service-area.css">
+
+<!-- ══════════════════════════════════════════
+     SERVICE SECTION — Horizontal Slider
+     ══════════════════════════════════════════ -->
+<section class="service-area">
+    <div class="container" style="position:relative; z-index:1;">
+
+        <!-- Header -->
+        <div class="svc-header">
+            <div>
+                <div class="svc-eyebrow">Neden SkyHan Flight Booking Sistem</div>
+                <h2 class="svc-main-title">Uçuşuna Ek Hizmet Ekle</h2>
+                <p class="svc-desc">Seyahatinizi daha konforlu hale getirmek için ayrıcalıklı ek hizmetlerimizden yararlanın.</p>
+            </div>
+            <div class="svc-arrows">
+                <button class="svc-arrow-btn" id="svc-prev" aria-label="Önceki">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="svc-arrow-btn" id="svc-next" aria-label="Sonraki">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Slider -->
+        <div class="svc-slider-outer" id="svc-outer">
+            <div class="svc-slider-track" id="svc-track">
+
+                <!-- 1. Ek Bagaj -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-briefcase-fill"></i></div>
+                    <div class="svc-card-title">Bagajınızı Önceden Ayırtın</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>Bagaj hakkınızı önceden alın <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Şimdi ekleyin, tasarruf edin <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Bagaj ücretlerinden indirim <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2. Koltuk Seçimi -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+                    <div class="svc-card-title">Koltuk Seçiminizi Yapın!</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>Cam kenarı mı, koridor mu? <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Uçuştan önce koltuğunuzu seçin <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Sizin için özel rezerve edilsin <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 3. Stressiz Seyahat -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-shield-fill-check"></i></div>
+                    <div class="svc-card-title">Stressiz Seyahatin Tadını Çıkarın</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>Güvence ile stressiz seyahat <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Uçuş değişimine karşı koruma <i class="bi bi-check-circle-fill"></i></li>
+                            <li>İptal ve sağlık güvencesi <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 4. Hızlı Geçiş -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <div class="svc-card-title">Hızlı Geçiş Ayrıcalığı</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>Havalimanında sıra beklemeyin <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Kontrollerden hızlıca geçin <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Değerli vaktiniz size kalsın <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 5. Uçak İçi Eğlence -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-play-circle-fill"></i></div>
+                    <div class="svc-card-title">Uçak İçi Eğlence Sistemi</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>En yeni gişe rekortmeni filmler <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Sınırsız müzik ve diziler <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Yüksek hızlı kablosuz internet <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 6. Yemek Seçimi -->
+                <div class="svc-card">
+                    <div class="svc-card-icon"><i class="bi bi-cup-hot-fill"></i></div>
+                    <div class="svc-card-title">Yemek ve İçecek Seçimi</div>
+                    <div class="svc-card-list">
+                        <ul>
+                            <li>Özel diyet menü seçenekleri <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Dünya mutfağından lezzetler <i class="bi bi-check-circle-fill"></i></li>
+                            <li>Sıcak ve soğuk spesiyaller <i class="bi bi-check-circle-fill"></i></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div><!-- /.svc-slider-track -->
+        </div><!-- /.svc-slider-outer -->
+        <!-- Dot indicators -->
+        <div class="svc-dots" id="svc-dots"></div>
+
+    </div><!-- /.container -->
+</section>
+<!-- ══════════════════════════════════════ -->
+
+<script src="~/geair/assets/js/service-area.js"></script>
