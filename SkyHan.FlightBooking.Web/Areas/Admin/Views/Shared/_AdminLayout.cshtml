@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    @await Component.InvokeAsync("AdminHead")
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+    @await Component.InvokeAsync("AdminSidebar")
+    @await Component.InvokeAsync("AdminTopbar")
+
+    <!-- ================================================================
+         MAIN CONTENT
+    ================================================================ -->
+    <main class="main-content" id="main-content">
+        @RenderBody()
+
+    </main>
+
+    @await Component.InvokeAsync("AdminFooter")
+
+    <!-- ================================================================
+         ADD FLIGHT MODAL
+    ================================================================ -->
+    <div class="modal-overlay" id="flightModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <span class="modal-title"><i class="bi bi-airplane-fill" style="color:var(--accent);margin-right:8px;"></i>Yeni Uçuş Ekle</span>
+                <button class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Uçuş No</label>
+                        <input class="form-control-custom" type="text" placeholder="TK000" id="newFlightNo" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Uçak Modeli</label>
+                        <select class="form-control-custom" id="newModel">
+                            <option>Airbus A320</option>
+                            <option>Airbus A321</option>
+                            <option>Boeing 737</option>
+                            <option>Boeing 777</option>
+                            <option>Boeing 787</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Kalkış Şehri</label>
+                        <input class="form-control-custom" type="text" placeholder="İstanbul" id="newDep" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Varış Şehri</label>
+                        <input class="form-control-custom" type="text" placeholder="Paris" id="newArr" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Kalkış Saati</label>
+                        <input class="form-control-custom" type="time" id="newDepTime" value="09:00" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Varış Saati</label>
+                        <input class="form-control-custom" type="time" id="newArrTime" value="12:00" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Kapı (Gate)</label>
+                        <input class="form-control-custom" type="text" placeholder="G01" id="newGate" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Durum</label>
+                        <select class="form-control-custom" id="newStatus">
+                            <option>Planlandı</option>
+                            <option>Boarding</option>
+                            <option>Gecikmeli</option>
+                            <option>İptal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn-cancel" onclick="closeModal()">İptal</button>
+                <button class="btn-save" onclick="saveFlight()"><i class="bi bi-check-lg" style="margin-right:6px;"></i>Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
+
+    @await Component.InvokeAsync("AdminScripts")
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

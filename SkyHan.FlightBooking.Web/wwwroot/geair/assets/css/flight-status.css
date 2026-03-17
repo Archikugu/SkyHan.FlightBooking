@@ -30,6 +30,7 @@
     position: relative;
     overflow: hidden;
     font-family: 'Barlow', sans-serif;
+    scroll-margin-top: 80px;
 }
 
 /* Decorative scanline overlay */

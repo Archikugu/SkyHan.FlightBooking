@@ -1,0 +1,121 @@
+<!-- ================================================================
+     SIDEBAR
+=============================================================== -->
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    var isDashboard = string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase)
+                      && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+    var isFlight = string.Equals(currentController, "Flight", StringComparison.OrdinalIgnoreCase);
+}
+
+<aside class="sidebar" id="sidebar">
+    <a href="#" class="sidebar-brand" onclick="return false;">
+        <div class="brand-icon">
+            <img class="brand-logo-full" src="~/geair/assets/img/logo/SkyHanLogo.png" alt="SkyHan Logo" />
+            <img class="brand-logo-mini" src="~/geair/assets/img/skyfavicon.png" alt="SkyHan Icon" />
+        </div>
+    </a>
+
+    <nav class="sidebar-nav">
+        <div class="nav-label">ANA MENÜ</div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item @(isDashboard ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-grid-1x2-fill icon"></i>
+                <span class="label">Dashboard</span>
+                <span class="nav-badge">5</span>
+            </a>
+        </div>
+
+        <div class="nav-item-wrap">
+            <div class="nav-link-item @(isFlight ? "active" : "")" id="flights-toggle" onclick="toggleSub(this,'flights-sub')">
+                <i class="bi bi-airplane-fill icon"></i>
+                <span class="label">Flights</span>
+                <i class="bi bi-chevron-down chevron @(isFlight ? "open" : "") ms-auto" id="flights-chev"></i>
+            </div>
+            <div class="sub-menu @(isFlight ? "open" : "")" id="flights-sub">
+                <a class="sub-menu-link @(isFlight ? "active" : "")" asp-area="Admin" asp-controller="Flight" asp-action="FlightList"><i class="bi bi-dot"></i>Uçuş Yönetimi</a>
+                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Tarifeler</a>
+                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Uçuş Durumları</a>
+            </div>
+        </div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-geo-alt-fill icon"></i>
+                <span class="label">Destinations</span>
+            </a>
+        </div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-box-seam-fill icon"></i>
+                <span class="label">Aircraft Fleet</span>
+                <span class="nav-badge">12</span>
+            </a>
+        </div>
+
+        <div class="nav-label">OPERASYONLAR</div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-people-fill icon"></i>
+                <span class="label">Passengers</span>
+            </a>
+        </div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-ticket-detailed-fill icon"></i>
+                <span class="label">Bookings</span>
+                <span class="nav-badge">38</span>
+            </a>
+        </div>
+
+        <div class="nav-item-wrap">
+            <div class="nav-link-item" onclick="toggleSub(this,'checkin-sub')">
+                <i class="bi bi-check-square-fill icon"></i>
+                <span class="label">Check-In Mgmt</span>
+                <i class="bi bi-chevron-down chevron ms-auto"></i>
+            </div>
+            <div class="sub-menu" id="checkin-sub">
+                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Online Check-In</a>
+                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Kiosk Yönetimi</a>
+            </div>
+        </div>
+
+        <div class="nav-label">ANALİTİK</div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-tag-fill icon"></i>
+                <span class="label">Offers & Discounts</span>
+            </a>
+        </div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-bar-chart-fill icon"></i>
+                <span class="label">Reports</span>
+            </a>
+        </div>
+
+        <div class="nav-label">SİSTEM</div>
+
+        <div class="nav-item-wrap">
+            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+                <i class="bi bi-gear-fill icon"></i>
+                <span class="label">Settings</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+            <i class="bi bi-arrow-bar-left" id="toggle-icon" style="font-size:16px;"></i>
+            <span id="toggle-label" style="transition:opacity .22s">SkyHan Admin</span>
+        </button>
+    </div>
+</aside>
