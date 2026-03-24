@@ -1,3 +1,11 @@
+using SkyHan.FlightBooking.Business.Mappings;
+using SkyHan.FlightBooking.Business.Services.Abstract;
+using SkyHan.FlightBooking.Business.Services.Concrete;
+using SkyHan.FlightBooking.DataAccess.Context;
+using SkyHan.FlightBooking.DataAccess.Repositories.Abstract;
+using SkyHan.FlightBooking.DataAccess.Repositories.Concrete;
+using SkyHan.FlightBooking.DataAccess.Settings.Concrete;
+
 namespace SkyHan.FlightBooking.Web
 {
     public class Program
@@ -8,6 +16,12 @@ namespace SkyHan.FlightBooking.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            MapsterMappingConfig.RegisterMappings();
+            builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+            builder.Services.Configure<CollectionNames>(builder.Configuration.GetSection("CollectionNames"));
+            builder.Services.AddSingleton<MongoDbContext>();
+            builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+            builder.Services.AddScoped<IFlightService, FlightManager>();
 
             var app = builder.Build();
 

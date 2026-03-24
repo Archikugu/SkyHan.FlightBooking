@@ -1,0 +1,511 @@
+@model SkyHan.FlightBooking.Business.Dtos.Flight.CreateFlightDto
+@{
+    ViewData["Title"] = "CreateFlight";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/create-flight.css" asp-append-version="true" />
+}
+
+@* ── Page Header ─────────────────────────────────────────── *@
+    <div class="page-header">
+        <div class="page-title-group">
+            <div class="page-breadcrumb">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+                <i class="bi bi-chevron-right sep"></i>
+                <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList"
+                   style="color:var(--gray-500);text-decoration:none;">Flights Management</a>
+                <i class="bi bi-chevron-right sep"></i>
+                <span style="color:var(--accent);">Yeni Uçuş Ekle</span>
+            </div>
+            <h1 class="page-title">Yeni Uçuş Ekle</h1>
+            <p class="page-desc">Sisteme yeni bir uçuş kaydı oluşturmak için formu eksiksiz doldurun.</p>
+        </div>
+    </div>
+
+    @* ── Validation Summary ───────────────────────────────────── *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="val-card">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                <strong>Formu göndermeden önce şu hataları düzeltin:</strong>
+                <div asp-validation-summary="All"></div>
+            </div>
+        </div>
+    }
+
+    @* ── FORM ─────────────────────────────────────────────────── *@
+    <form method="post" id="flightForm" novalidate>
+        @Html.AntiForgeryToken()
+
+        <div class="create-grid">
+
+            @* ════════════════════════════════════
+               SOL KOLON — tüm form alanları
+            ════════════════════════════════════ *@
+            <div class="create-col-main">
+
+                @* ── 1. Uçuş Kimliği ─────────────────── *@
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="sh-icon blue"><i class="bi bi-airplane-fill"></i></div>
+                        <div class="sh-text">
+                            <div class="sh-title">Uçuş Kimliği</div>
+                            <div class="sh-desc">Uçuş numarası, havayolu kodu ve durum bilgileri</div>
+                        </div>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="fg-3 mb-18">
+
+                            @* FlightNumber *@
+                            <div class="field">
+                                <label asp-for="FlightNumber" class="f-label">
+                                    Uçuş Numarası <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-hash f-icon"></i>
+                                    <input asp-for="FlightNumber"
+                                           class="f-input"
+                                           placeholder="TK102"
+                                           maxlength="10"
+                                           autocomplete="off"
+                                           oninput="this.value=this.value.toUpperCase();syncPreview()" />
+                                </div>
+                                <span asp-validation-for="FlightNumber" class="f-error"></span>
+                                <span class="f-hint">2 harf + rakam — örn. TK102</span>
+                            </div>
+
+                            @* AirlineCode *@
+                            <div class="field">
+                                <label asp-for="AirlineCode" class="f-label">
+                                    Havayolu <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-building f-icon"></i>
+                                    <select asp-for="AirlineCode" class="f-select" onchange="syncPreview()">
+                                        <option value="">Seçin…</option>
+                                        <option value="TK">TK – Turkish Airlines</option>
+                                        <option value="PC">PC – Pegasus</option>
+                                        <option value="XQ">XQ – SunExpress</option>
+                                        <option value="LH">LH – Lufthansa</option>
+                                        <option value="BA">BA – British Airways</option>
+                                        <option value="AF">AF – Air France</option>
+                                        <option value="KL">KL – KLM</option>
+                                        <option value="EK">EK – Emirates</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="AirlineCode" class="f-error"></span>
+                            </div>
+
+                            @* Status *@
+                            <div class="field">
+                                <label asp-for="Status" class="f-label">
+                                    Durum <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-circle-fill f-icon" id="statusDot" style="font-size:8px;color:var(--accent);"></i>
+                                    <select asp-for="Status" class="f-select" id="statusSel" onchange="syncStatus()">
+                                        <option value="">Seçin…</option>
+                                        <option value="Scheduled">Scheduled – Planlandı</option>
+                                        <option value="Boarding">Boarding – Biniş</option>
+                                        <option value="Delayed">Delayed – Gecikmeli</option>
+                                        <option value="Cancelled">Cancelled – İptal</option>
+                                        <option value="Completed">Completed – Tamamlandı</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="Status" class="f-error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                @* ── 2. Kalkış Bilgileri ──────────────── *@
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="sh-icon green"><i class="bi bi-box-arrow-up-right"></i></div>
+                        <div class="sh-text">
+                            <div class="sh-title">Kalkış Bilgileri</div>
+                            <div class="sh-desc">Kalkış havalimanı kodu, adı ve tarih/saat</div>
+                        </div>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="fg-2 mb-18">
+
+                            @* DepartureAirportCode *@
+                            <div class="field">
+                                <label asp-for="DepartureAirportCode" class="f-label">
+                                    Havalimanı Kodu <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-geo-alt-fill f-icon" style="color:#10B981;"></i>
+                                    <input asp-for="DepartureAirportCode"
+                                           class="f-input code"
+                                           placeholder="IST"
+                                           maxlength="3"
+                                           oninput="this.value=this.value.toUpperCase();syncPreview()" />
+                                </div>
+                                <span asp-validation-for="DepartureAirportCode" class="f-error"></span>
+                                <span class="f-hint">IATA kodu — 3 büyük harf</span>
+                            </div>
+
+                            @* DepartureAirportName *@
+                            <div class="field">
+                                <label asp-for="DepartureAirportName" class="f-label">
+                                    Havalimanı Adı <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-building-fill f-icon"></i>
+                                    <input asp-for="DepartureAirportName"
+                                           class="f-input"
+                                           placeholder="İstanbul Havalimanı"
+                                           oninput="syncPreview()" />
+                                </div>
+                                <span asp-validation-for="DepartureAirportName" class="f-error"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="fg-1">
+                            @* DepartureTime *@
+                            <div class="field">
+                                <label asp-for="DepartureTime" class="f-label">
+                                    Kalkış Tarihi ve Saati <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-calendar3 f-icon"></i>
+                                    <input asp-for="DepartureTime"
+                                           type="datetime-local"
+                                           class="f-input"
+                                           onchange="calcDuration();syncPreview()" />
+                                </div>
+                                <span asp-validation-for="DepartureTime" class="f-error"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                @* ── 3. Varış Bilgileri ───────────────── *@
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="sh-icon orange"><i class="bi bi-box-arrow-in-down-right"></i></div>
+                        <div class="sh-text">
+                            <div class="sh-title">Varış Bilgileri</div>
+                            <div class="sh-desc">Varış havalimanı kodu, adı ve tarih/saat</div>
+                        </div>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="fg-2 mb-18">
+
+                            @* ArrivalAirportCode *@
+                            <div class="field">
+                                <label asp-for="ArrivalAirportCode" class="f-label">
+                                    Havalimanı Kodu <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-geo-alt-fill f-icon" style="color:#F59E0B;"></i>
+                                    <input asp-for="ArrivalAirportCode"
+                                           class="f-input code"
+                                           placeholder="LHR"
+                                           maxlength="3"
+                                           oninput="this.value=this.value.toUpperCase();syncPreview()" />
+                                </div>
+                                <span asp-validation-for="ArrivalAirportCode" class="f-error"></span>
+                                <span class="f-hint">IATA kodu — 3 büyük harf</span>
+                            </div>
+
+                            @* ArrivalAirportName *@
+                            <div class="field">
+                                <label asp-for="ArrivalAirportName" class="f-label">
+                                    Havalimanı Adı <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-building-fill f-icon"></i>
+                                    <input asp-for="ArrivalAirportName"
+                                           class="f-input"
+                                           placeholder="London Heathrow"
+                                           oninput="syncPreview()" />
+                                </div>
+                                <span asp-validation-for="ArrivalAirportName" class="f-error"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="fg-2">
+
+                            @* ArrivalTime *@
+                            <div class="field">
+                                <label asp-for="ArrivalTime" class="f-label">
+                                    Varış Tarihi ve Saati <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-calendar3 f-icon"></i>
+                                    <input asp-for="ArrivalTime"
+                                           type="datetime-local"
+                                           class="f-input"
+                                           onchange="calcDuration();syncPreview()" />
+                                </div>
+                                <span asp-validation-for="ArrivalTime" class="f-error"></span>
+                            </div>
+
+                            @* DurationMinutes *@
+                            <div class="field">
+                                <label asp-for="DurationMinutes" class="f-label">
+                                    Uçuş Süresi (Dakika) <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-clock-fill f-icon"></i>
+                                    <input asp-for="DurationMinutes"
+                                           type="number"
+                                           class="f-input has-suffix"
+                                           placeholder="180"
+                                           min="1" max="2880"
+                                           id="durInput"
+                                           oninput="syncDurSuffix()" />
+                                    <span class="f-suffix" id="durSuffix">—</span>
+                                </div>
+                                <span asp-validation-for="DurationMinutes" class="f-error"></span>
+                                <span class="f-hint">Tarihler girilince otomatik hesaplanır</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                @* ── 4. Kapasite ──────────────────────── *@
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="sh-icon purple"><i class="bi bi-people-fill"></i></div>
+                        <div class="sh-text">
+                            <div class="sh-title">Koltuk Kapasitesi</div>
+                            <div class="sh-desc">Toplam ve müsait koltuk sayısı</div>
+                        </div>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="fg-2 mb-18">
+
+                            @* TotalSeats *@
+                            <div class="field">
+                                <label asp-for="TotalSeats" class="f-label">
+                                    Toplam Koltuk <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-person-fill f-icon"></i>
+                                    <input asp-for="TotalSeats"
+                                           type="number"
+                                           class="f-input"
+                                           placeholder="180"
+                                           min="1" max="900"
+                                           oninput="syncCapacity()" />
+                                </div>
+                                <span asp-validation-for="TotalSeats" class="f-error"></span>
+                            </div>
+
+                            @* AvailableSeats *@
+                            <div class="field">
+                                <label asp-for="AvailableSeats" class="f-label">
+                                    Müsait Koltuk <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-person-check-fill f-icon"></i>
+                                    <input asp-for="AvailableSeats"
+                                           type="number"
+                                           class="f-input"
+                                           placeholder="142"
+                                           min="0"
+                                           oninput="syncCapacity()" />
+                                </div>
+                                <span asp-validation-for="AvailableSeats" class="f-error"></span>
+                            </div>
+
+                        </div>
+
+                        @* Doluluk barı *@
+                        <div class="cap-widget">
+                            <div class="cap-header">
+                                <span class="cap-label">Doluluk Oranı</span>
+                                <span class="cap-pct" id="capPct">—</span>
+                            </div>
+                            <div class="cap-track">
+                                <div class="cap-fill" id="capFill"></div>
+                            </div>
+                            <div class="cap-footer">
+                                <span id="capOcc">— dolu koltuk</span>
+                                <span id="capFree">— müsait koltuk</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                @* ── 5. Fiyatlandırma ─────────────────── *@
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="sh-icon teal"><i class="bi bi-tag-fill"></i></div>
+                        <div class="sh-text">
+                            <div class="sh-title">Fiyatlandırma</div>
+                            <div class="sh-desc">Baz fiyat ve para birimi</div>
+                        </div>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="fg-2 mb-18">
+
+                            @* BasePrice *@
+                            <div class="field">
+                                <label asp-for="BasePrice" class="f-label">
+                                    Baz Fiyat <span class="f-req">*</span>
+                                </label>
+                                <div class="f-wrap">
+                                    <i class="bi bi-currency-exchange f-icon"></i>
+                                    <input asp-for="BasePrice"
+                                           type="number"
+                                           class="f-input has-suffix"
+                                           placeholder="0.00"
+                                           min="0" step="0.01"
+                                           oninput="syncPrice()" />
+                                    <span class="f-suffix" id="priceSuffix">—</span>
+                                </div>
+                                <span asp-validation-for="BasePrice" class="f-error"></span>
+                            </div>
+
+                            @* Currency *@
+                            <div class="field">
+                                <label class="f-label">Para Birimi <span class="f-req">*</span></label>
+                                <div class="currency-row" id="currencyRow">
+
+                                    <label class="cc-label" id="cc-TRY">
+                                        <input type="radio" asp-for="Currency" value="TRY" onchange="pickCurrency(this,'₺')" />
+                                        <span class="cc-sym">₺</span>
+                                        <span class="cc-code">TRY</span>
+                                    </label>
+
+                                    <label class="cc-label" id="cc-EUR">
+                                        <input type="radio" asp-for="Currency" value="EUR" onchange="pickCurrency(this,'€')" />
+                                        <span class="cc-sym">€</span>
+                                        <span class="cc-code">EUR</span>
+                                    </label>
+
+                                    <label class="cc-label" id="cc-USD">
+                                        <input type="radio" asp-for="Currency" value="USD" onchange="pickCurrency(this,'$')" />
+                                        <span class="cc-sym">$</span>
+                                        <span class="cc-code">USD</span>
+                                    </label>
+
+                                    <label class="cc-label" id="cc-GBP">
+                                        <input type="radio" asp-for="Currency" value="GBP" onchange="pickCurrency(this,'£')" />
+                                        <span class="cc-sym">£</span>
+                                        <span class="cc-code">GBP</span>
+                                    </label>
+
+                                </div>
+                                <span asp-validation-for="Currency" class="f-error"></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    @* Form Aksiyonları *@
+                    <div class="form-actions">
+                        <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList"
+                           class="btn-cancel-form">
+                            <i class="bi bi-arrow-left"></i> Listeye Dön
+                        </a>
+                        <button type="submit" class="btn-save-form" id="saveBtn">
+                            <span id="saveBtnIdle"><i class="bi bi-check-circle-fill"></i> Uçuşu Kaydet</span>
+                            <span id="saveBtnLoad" style="display:none;"><span class="spinner"></span> Kaydediliyor…</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            @* ════════════════════════════════════
+               SAĞ KOLON — canlı önizleme
+            ════════════════════════════════════ *@
+            <div class="create-col-side">
+
+                @* Uçuş Kartı Önizlemesi *@
+                <div class="route-card">
+                    <div class="rc-label">CANLI ÖNİZLEME</div>
+
+                    <div class="rc-flight-no" id="rc-no">——</div>
+                    <div class="rc-airline" id="rc-airline">Havayolu seçin</div>
+
+                    <div class="rc-route">
+                        <div class="rc-airport">
+                            <span class="rc-code" id="rc-dep-code">IST</span>
+                            <span class="rc-city" id="rc-dep-name">Kalkış</span>
+                        </div>
+                        <div class="rc-arrow">
+                            <div class="rc-line">
+                                <i class="bi bi-airplane-fill rc-plane-icon"></i>
+                            </div>
+                            <span class="rc-dur" id="rc-dur">— dk</span>
+                        </div>
+                        <div class="rc-airport">
+                            <span class="rc-code" id="rc-arr-code">—</span>
+                            <span class="rc-city" id="rc-arr-name">Varış</span>
+                        </div>
+                    </div>
+
+                    <div class="rc-divider"></div>
+
+                    <div class="rc-meta">
+                        <div class="rc-meta-item">
+                            <span class="rc-meta-key">Kalkış</span>
+                            <span class="rc-meta-val" id="rc-dep-time">—</span>
+                        </div>
+                        <div class="rc-meta-item">
+                            <span class="rc-meta-key">Varış</span>
+                            <span class="rc-meta-val" id="rc-arr-time">—</span>
+                        </div>
+                        <div class="rc-meta-item">
+                            <span class="rc-meta-key">Kapasite</span>
+                            <span class="rc-meta-val" id="rc-cap">—</span>
+                        </div>
+                        <div class="rc-meta-item">
+                            <span class="rc-meta-key">Fiyat</span>
+                            <span class="rc-meta-val" id="rc-price">—</span>
+                        </div>
+                    </div>
+
+                    <div class="rc-status" id="rc-status">
+                        <span class="dot"></span>
+                        <span id="rc-status-txt">Durum seçin</span>
+                    </div>
+                </div>
+
+                @* Zorunlu alan notu *@
+                <div style="background:var(--white);border:1px solid var(--gray-100);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);">
+                    <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;">
+                        <i class="bi bi-info-circle-fill" style="color:var(--accent);margin-right:6px;"></i>Bilgi
+                    </div>
+                    <ul style="font-size:12px;color:var(--gray-500);padding-left:16px;line-height:1.8;margin:0;">
+                        <li><span style="color:#EF4444;">*</span> ile işaretli alanlar zorunludur.</li>
+                        <li>Uçuş süresi kalkış ve varış saatinden otomatik hesaplanır.</li>
+                        <li>IATA kodları 3 büyük harf olmalıdır (IST, LHR, CDG…).</li>
+                        <li>Baz fiyat vergisiz bilet ücretidir.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/admin/create-flight.js" asp-append-version="true"></script>
+}

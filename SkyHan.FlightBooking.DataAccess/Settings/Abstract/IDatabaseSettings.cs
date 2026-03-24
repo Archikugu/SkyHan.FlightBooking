@@ -1,0 +1,7 @@
+namespace SkyHan.FlightBooking.DataAccess.Settings.Abstract;
+
+public interface IDatabaseSettings
+{
+    string ConnectionString { get; set; }
+    string DatabaseName { get; set; }
+}

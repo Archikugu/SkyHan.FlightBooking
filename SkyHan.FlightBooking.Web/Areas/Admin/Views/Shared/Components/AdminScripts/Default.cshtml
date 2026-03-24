@@ -203,5 +203,6 @@
     const persisted = localStorage.getItem('admin.sidebar.collapsed') === '1';
     applySidebarState(persisted);
 
-    if (document.getElementById('tableBody')) renderTable();
+    const tableBody = document.getElementById('tableBody');
+    if (tableBody && tableBody.dataset.source === 'demo') renderTable();
 </script>
