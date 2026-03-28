@@ -1,0 +1,141 @@
+.booking-list-page .booking-title {
+    color: #0f172a;
+}
+
+.booking-list-page .booking-subtitle {
+    font-size: 13px;
+}
+
+.booking-list-page .booking-filter-card,
+.booking-list-page .booking-table-card {
+    border-radius: 14px;
+}
+
+.booking-list-page .booking-input-group-addon {
+    border-radius: 8px 0 0 8px;
+    border-color: #e5e7eb;
+}
+
+.booking-list-page .booking-input-group-control {
+    border-radius: 0 8px 8px 0;
+    border-color: #e5e7eb;
+    font-size: 13px;
+}
+
+.booking-list-page .booking-control {
+    border-radius: 8px;
+    border-color: #e5e7eb;
+    font-size: 13px;
+}
+
+.booking-list-page .booking-row {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.booking-list-page .booking-cell {
+    padding: 13px 16px;
+}
+
+.booking-list-page .booking-cell-index {
+    padding: 13px 16px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.booking-list-page .booking-flight-code {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #0f172a;
+}
+
+.booking-list-page .booking-id-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 1px;
+}
+
+.booking-list-page .booking-name-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    flex-shrink: 0;
+}
+
+.booking-list-page .booking-name-text {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.booking-list-page .booking-mini-icon,
+.booking-list-page .booking-action-icon,
+.booking-list-page .booking-status-icon,
+.booking-list-page .booking-page-icon {
+    font-size: 11px;
+}
+
+.booking-list-page .booking-passenger-count {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.booking-list-page .booking-passenger-label {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.booking-list-page .booking-price {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.booking-list-page .booking-date {
+    color: #374151;
+    font-size: 13px;
+}
+
+.booking-list-page .booking-status-badge {
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.booking-list-page .booking-action-btn {
+    border-radius: 7px;
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+.booking-list-page .booking-page-link {
+    border-radius: 8px;
+    font-size: 12.5px;
+}
+
+.booking-list-page .booking-page-number {
+    font-weight: 500;
+}
+
+.booking-list-page .page-item.active .booking-page-number {
+    font-weight: 700;
+}
+
+.booking-list-page .booking-page-dots {
+    border: none;
+    background: none;
+    color: #94a3b8;
+}
+
+.booking-list-page .booking-empty-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 10px;
+    opacity: .25;
+}

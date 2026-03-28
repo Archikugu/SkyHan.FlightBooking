@@ -1,0 +1,110 @@
+
+@{
+    ViewData["Title"] = "BookingList";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/booking-list.css" asp-append-version="true" />
+}
+
+<div class="container-fluid mt-4 px-4 booking-list-page">
+
+    <!-- Sayfa Başlığı -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1" style="font-size:13px;">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Rezervasyon Listesi</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold mb-0 booking-title">Rezervasyon Listesi</h4>
+            <p class="text-muted mb-0 booking-subtitle">Sistemdeki tüm rezervasyonları görüntüleyin ve yönetin.</p>
+        </div>
+        <a href="#" class="btn btn-primary px-4" style="border-radius:9px;font-weight:600;font-size:13.5px;">
+            <i class="bi bi-plus-lg me-2"></i>Yeni Rezervasyon
+        </a>
+    </div>
+
+    <!-- Filtre Alanı -->
+    <div class="card border-0 shadow-sm mb-4 booking-filter-card">
+        <div class="card-body px-4 py-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label fw-semibold mb-1" style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;">Uçuş No</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-end-0 booking-input-group-addon">
+                            <i class="bi bi-search text-muted" style="font-size:12px;"></i>
+                        </span>
+                        <input type="text" id="filterFlight" class="form-control border-start-0 booking-input-group-control"
+                               placeholder="TK102..." onkeyup="applyFilter()" />
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label fw-semibold mb-1" style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;">Durum</label>
+                    <select id="filterStatus" class="form-select form-select-sm booking-control" onchange="applyFilter()">
+                        <option value="">Tümü</option>
+                        <option value="Confirmed">Onaylandı</option>
+                        <option value="Pending">Beklemede</option>
+                        <option value="Cancelled">İptal</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label fw-semibold mb-1" style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;">Rezervasyon Tarihi</label>
+                    <input type="date" id="filterDate" class="form-control form-control-sm booking-control" onchange="applyFilter()" />
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button class="btn btn-primary btn-sm flex-fill" onclick="applyFilter()" style="border-radius:8px;font-weight:600;">
+                        <i class="bi bi-funnel-fill me-1"></i> Filtrele
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="clearFilter()" style="border-radius:8px;" title="Temizle">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tablo -->
+    <div class="card border-0 shadow-sm booking-table-card" style="overflow:hidden;">
+        <div class="card-header bg-white border-bottom px-4 py-3 d-flex align-items-center justify-content-between">
+            <span class="fw-semibold" style="font-size:13.5px;color:#0f172a;">
+                Tüm Rezervasyonlar
+            </span>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3" id="totalCount" style="font-size:12px;">20 kayıt</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="bookingTable">
+                <thead style="background:#f8fafc;">
+                    <tr>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">#</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">Uçuş No</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">İletişim Adı</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">Yolcu Sayısı</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">Toplam Fiyat</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">Rezervasyon Tarihi</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">Durum</th>
+                        <th style="font-size:11px;font-weight:700;letter-spacing:.7px;color:#94a3b8;text-transform:uppercase;padding:12px 16px;border-bottom:1px solid #f1f5f9;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" style="font-size:13.5px;">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer bg-white border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <span class="text-muted" style="font-size:12.5px;" id="pageInfo"></span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0 gap-1" id="pagination"></ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/booking-list.js" asp-append-version="true"></script>
+}

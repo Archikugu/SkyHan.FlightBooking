@@ -20,279 +20,298 @@
 }
 
 @* ── Page Header ────────────────────────────────────────── *@
-    <div class="page-header">
-        <div class="page-title-group">
-            <div class="page-breadcrumb">
-                <i class="bi bi-grid-1x2-fill"></i>
-                <span>Dashboard</span>
-                <i class="bi bi-chevron-right sep"></i>
-                <span style="color:var(--accent);">Flights Management</span>
-            </div>
-            <h1 class="page-title">Flights Management</h1>
-            <p class="page-desc">
-                Sistemde kayıtlı uçuşları görüntüleyebilir, düzenleyebilir veya yeni uçuş ekleyebilirsiniz.
-            </p>
+<div class="page-header">
+    <div class="page-title-group">
+        <div class="page-breadcrumb">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Dashboard</span>
+            <i class="bi bi-chevron-right sep"></i>
+            <span style="color:var(--accent);">Flights Management</span>
         </div>
-        <a asp-area="Admin" asp-controller="Flight" asp-action="CreateFlight" class="btn-add">
-            <i class="bi bi-plus-lg"></i>
-            <span>Yeni Uçuş Ekle</span>
-        </a>
+        <h1 class="page-title">Flights Management</h1>
+        <p class="page-desc">
+            Sistemde kayıtlı uçuşları görüntüleyebilir, düzenleyebilir veya yeni uçuş ekleyebilirsiniz.
+        </p>
     </div>
+    <a asp-area="Admin" asp-controller="Flight" asp-action="CreateFlight" class="btn-add">
+        <i class="bi bi-plus-lg"></i>
+        <span>Yeni Uçuş Ekle</span>
+    </a>
+</div>
 
-    @* ── Stat Cards ─────────────────────────────────────────── *@
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-icon blue"><i class="bi bi-airplane-fill"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">@totalFlights</div>
-                <div class="stat-label">Toplam Uçuş</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">@completedFlights</div>
-                <div class="stat-label">Tamamlanan</div>
-                @if (totalFlights > 0)
-                {
-                    <div class="stat-change up">
-                        <i class="bi bi-arrow-up-short"></i>
-                        %@Math.Round((double)completedFlights / totalFlights * 100, 0) oran
-                    </div>
-                }
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon orange"><i class="bi bi-clock-fill"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">@delayedFlights</div>
-                <div class="stat-label">Gecikmeli</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
-            <div class="stat-body">
-                <div class="stat-value">@cancelledFlights</div>
-                <div class="stat-label">İptal Edilen</div>
-            </div>
+@* ── Stat Cards ─────────────────────────────────────────── *@
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-airplane-fill"></i></div>
+        <div class="stat-body">
+            <div class="stat-value">@totalFlights</div>
+            <div class="stat-label">Toplam Uçuş</div>
         </div>
     </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-body">
+            <div class="stat-value">@completedFlights</div>
+            <div class="stat-label">Tamamlanan</div>
+            @if (totalFlights > 0)
+            {
+                <div class="stat-change up">
+                    <i class="bi bi-arrow-up-short"></i>
+                    %@Math.Round((double)completedFlights / totalFlights * 100, 0) oran
+                </div>
+            }
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange"><i class="bi bi-clock-fill"></i></div>
+        <div class="stat-body">
+            <div class="stat-value">@delayedFlights</div>
+            <div class="stat-label">Gecikmeli</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+        <div class="stat-body">
+            <div class="stat-value">@cancelledFlights</div>
+            <div class="stat-label">İptal Edilen</div>
+        </div>
+    </div>
+</div>
 
-    @* ── Table Card ──────────────────────────────────────────── *@
-    <div class="table-card">
+@* ── Table Card ──────────────────────────────────────────── *@
+<div class="table-card">
 
-        @* ── Filters ── *@
-        <div class="table-card-header">
+    @* ── Filters ── *@
+    <div class="table-card-header">
 
-            {{-- Arama --}}
-            <div class="tbl-search">
-                <i class="bi bi-search si"></i>
-                <input type="text"
-                       id="searchInput"
-                       placeholder="Uçuş no, havalimanı, havayolu ara…"
-                       oninput="filterTable()" />
-            </div>
-
-            {{-- Durum filtresi --}}
-            <select class="filter-select" id="statusFilter" onchange="filterTable()">
-                <option value="">Tüm Durumlar</option>
-                <option value="Scheduled">Planlandı</option>
-                <option value="Boarding">Boarding</option>
-                <option value="Delayed">Gecikmeli</option>
-                <option value="Cancelled">İptal</option>
-                <option value="Completed">Tamamlandı</option>
-            </select>
-
-            {{-- Havayolu filtresi (model'den dinamik) --}}
-            <select class="filter-select" id="airlineFilter" onchange="filterTable()">
-                <option value="">Tüm Havayolları</option>
-                @if (Model != null)
-                {
-                    foreach (var code in Model.Select(f => f.AirlineCode).Distinct().OrderBy(c => c))
-                    {
-                        <option value="@code">@code</option>
-                    }
-                }
-            </select>
-
-            <span class="tbl-count" id="rowCount">@totalFlights uçuş listeleniyor</span>
+        @* Arama *@
+        <div class="tbl-search">
+            <i class="bi bi-search si"></i>
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Uçuş no, havalimanı, havayolu ara…"
+                   oninput="filterTable()" />
         </div>
 
-        @* ── Table ── *@
-        <div style="overflow-x:auto;">
-            <table class="flights-table" id="flightsTable">
-                <thead>
+        @* Durum filtresi *@
+        <select class="filter-select" id="statusFilter" onchange="filterTable()">
+            <option value="">Tüm Durumlar</option>
+            <option value="Scheduled">Planlandı</option>
+            <option value="Boarding">Boarding</option>
+            <option value="Delayed">Gecikmeli</option>
+            <option value="Cancelled">İptal</option>
+            <option value="Completed">Tamamlandı</option>
+        </select>
+
+        @* Havayolu filtresi (model'den dinamik) *@
+        <select class="filter-select" id="airlineFilter" onchange="filterTable()">
+            <option value="">Tüm Havayolları</option>
+            @if (Model != null)
+            {
+                foreach (var code in Model.Select(f => f.AirlineCode).Distinct().OrderBy(c => c))
+                {
+                    <option value="@code">@code</option>
+                }
+            }
+        </select>
+
+        <span class="tbl-count" id="rowCount">@totalFlights uçuş listeleniyor</span>
+    </div>
+
+    @* ── Table ── *@
+    <div style="overflow-x:auto;">
+        <table class="flights-table" id="flightsTable">
+            <thead>
+                <tr>
+                    <th>UÇUŞ NO</th>
+                    <th>HAVAYOLU</th>
+                    <th>KALKIŞ</th>
+                    <th>VARIŞ</th>
+                    <th>KALKIŞ SAATİ</th>
+                    <th>VARIŞ SAATİ</th>
+                    <th>SÜRE</th>
+                    <th>KAPASİTE</th>
+                    <th>FİYAT</th>
+                    <th>DURUM</th>
+                    <th>İŞLEMLER</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @if (Model == null || !Model.Any())
+                {
                     <tr>
-                        <th>UÇUŞ NO</th>
-                        <th>HAVAYOLU</th>
-                        <th>KALKIŞ</th>
-                        <th>VARIŞ</th>
-                        <th>KALKIŞ SAATİ</th>
-                        <th>VARIŞ SAATİ</th>
-                        <th>SÜRE</th>
-                        <th>KAPASİTE</th>
-                        <th>FİYAT</th>
-                        <th>DURUM</th>
-                        <th>İŞLEMLER</th>
+                        <td colspan="11" class="empty-row">
+                            <i class="bi bi-airplane" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4;"></i>
+                            Kayıtlı uçuş bulunamadı.
+                        </td>
                     </tr>
-                </thead>
-                <tbody id="tableBody">
-                    @if (Model == null || !Model.Any())
+                }
+                else
+                {
+                    foreach (var flight in Model)
                     {
-                        <tr>
-                            <td colspan="11" class="empty-row">
-                                <i class="bi bi-airplane" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4;"></i>
-                                Kayıtlı uçuş bulunamadı.
+                        @* Status badge değerlerini al, bilinmeyen status için fallback *@
+                        var (label, css, icon) = statusMap.TryGetValue(flight.Status, out var sv)
+                        ? sv
+                        : (flight.Status, "status-scheduled", "bi-circle");
+
+                        @* Koltuk doluluk oranı *@
+                        int occupancy = flight.TotalSeats > 0
+                        ? (int)Math.Round((double)(flight.TotalSeats - flight.AvailableSeats) / flight.TotalSeats * 100)
+                        : 0;
+
+                        @* Süreyi saat:dakika formatına çevir *@
+                        int durHour = flight.DurationMinutes / 60;
+                        int durMin = flight.DurationMinutes % 60;
+                        string durStr = durHour > 0 ? $"{durHour}s {durMin}dk" : $"{durMin}dk";
+
+                        var airlineCode = (flight.AirlineCode ?? string.Empty).ToUpperInvariant();
+                        var hash = 0;
+                        foreach (var ch in airlineCode)
+                        {
+                            hash = ((hash * 31) + ch) & 0x7fffffff;
+                        }
+                        var hue = hash % 360;
+                        var endHue = (hue + 24) % 360;
+                        var airlineStyle = $"--airline-start:hsl({hue} 82% 52%);--airline-end:hsl({endHue} 78% 34%);";
+
+                        <tr data-flight-no="@flight.FlightNumber.ToLower()"
+                            data-dep-airport="@flight.DepartureAirportCode.ToLower() @flight.DepartureAirportName.ToLower()"
+                            data-arr-airport="@flight.ArrivalAirportCode.ToLower() @flight.ArrivalAirportName.ToLower()"
+                            data-airline="@flight.AirlineCode"
+                            data-status="@flight.Status">
+
+                            @* Uçuş No *@
+                            <td>
+                                <div class="flight-no">
+                                    <span class="flight-no-dot"></span>
+                                    @flight.FlightNumber
+                                </div>
                             </td>
+
+                            @* Havayolu *@
+                            <td>
+                                <span class="airline-chip airline-chip-dynamic" style="@airlineStyle">@flight.AirlineCode</span>
+                            </td>
+
+                            @* Kalkış *@
+                            <td>
+                                <div class="airport-cell">
+                                    <span class="airport-code">@flight.DepartureAirportCode</span>
+                                    <span class="airport-name">@flight.DepartureAirportName</span>
+                                </div>
+                            </td>
+
+                            @* Varış *@
+                            <td>
+                                <div class="airport-cell">
+                                    <span class="airport-code">@flight.ArrivalAirportCode</span>
+                                    <span class="airport-name">@flight.ArrivalAirportName</span>
+                                </div>
+                            </td>
+
+                            @* Kalkış Saati *@
+                            <td>
+                                <span class="time-cell">@flight.DepartureTime.ToString("HH:mm")</span>
+                                <span class="date-sub">@flight.DepartureTime.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            </td>
+
+                            @* Varış Saati *@
+                            <td>
+                                <span class="time-cell">@flight.ArrivalTime.ToString("HH:mm")</span>
+                                <span class="date-sub">@flight.ArrivalTime.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            </td>
+
+                            @* Süre *@
+                            <td>
+                                <span class="duration-cell">
+                                    <i class="bi bi-clock"></i> @durStr
+                                </span>
+                            </td>
+
+                            @* Kapasite + Doluluk Barı *@
+                            <td>
+                                <div class="capacity-cell">
+                                    <div class="capacity-text">
+                                        <span class="cap-available">@flight.AvailableSeats</span>
+                                        <span class="cap-sep">/</span>
+                                        <span class="cap-total">@flight.TotalSeats</span>
+                                    </div>
+                                    <div class="cap-bar">
+                                        <div class="cap-fill @(occupancy >= 90 ? "cap-critical" : occupancy >= 70 ? "cap-warning" : "cap-ok")"
+                                             style="width:@occupancy%;"
+                                             title="Doluluk: %@occupancy"></div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            @* Fiyat *@
+                            <td>
+                                <span class="price-cell">
+                                    @flight.BasePrice.ToString("N0") <small>@flight.Currency</small>
+                                </span>
+                            </td>
+
+                            @* Durum *@
+                            <td>
+                                <span class="status-badge @css">
+                                    <span class="dot"></span>@label
+                                </span>
+                            </td>
+
+                            @* İşlemler *@
+                            <td>
+                                <div class="actions-cell">
+                                    <a asp-area="Admin"
+                                       asp-controller="Flights"
+                                       asp-action="Detail"
+                                       asp-route-id="@flight.FlightId"
+                                       class="act-btn act-view"
+                                       title="Görüntüle">
+                                        <i class="bi bi-eye-fill"></i>
+                                        <span class="btn-label">Görüntüle</span>
+                                    </a>
+                                    <a asp-area="Admin"
+                                       asp-controller="Flights"
+                                       asp-action="Edit"
+                                       asp-route-id="@flight.FlightId"
+                                       class="act-btn act-edit"
+                                       title="Düzenle">
+                                        <i class="bi bi-pencil-fill"></i>
+                                        <span class="btn-label">Düzenle</span>
+                                    </a>
+                                    <a asp-area="Admin"
+                                       asp-controller="Booking"
+                                       asp-action="CreateBooking"
+                                       asp-route-flightId="@flight.FlightId"
+                                       class="act-btn act-book"
+                                       title="Rezerve Et">
+                                        <i class="bi bi-ticket-perforated-fill"></i>
+                                        <span class="btn-label">Rezerve Et</span>
+                                    </a>
+                                    <button class="act-btn act-del"
+                                            title="Sil"
+                                            onclick="confirmDelete('@flight.FlightId', '@flight.FlightNumber')">
+                                        <i class="bi bi-trash-fill"></i>
+                                        <span class="btn-label">Sil</span>
+                                    </button>
+                                </div>
+                            </td>
+
                         </tr>
                     }
-                    else
-                    {
-                        foreach (var flight in Model)
-                        {
-                            @* Status badge değerlerini al, bilinmeyen status için fallback *@
-                            var (label, css, icon) = statusMap.TryGetValue(flight.Status, out var sv)
-                            ? sv
-                            : (flight.Status, "status-scheduled", "bi-circle");
+                }
+            </tbody>
+        </table>
+    </div>
 
-                            @* Koltuk doluluk oranı *@
-                            int occupancy = flight.TotalSeats > 0
-                            ? (int)Math.Round((double)(flight.TotalSeats - flight.AvailableSeats) / flight.TotalSeats * 100)
-                            : 0;
+    @* ── Pagination ── *@
+    <div class="table-card-footer">
+        <span class="footer-info" id="footerInfo"></span>
+        <ul class="pagination-list" id="paginationList"></ul>
+    </div>
 
-                            @* Süreyi saat:dakika formatına çevir *@
-                            int durHour = flight.DurationMinutes / 60;
-                            int durMin = flight.DurationMinutes % 60;
-                            string durStr = durHour > 0 ? $"{durHour}s {durMin}dk" : $"{durMin}dk";
-
-                            <tr data-flight-no="@flight.FlightNumber.ToLower()"
-                                data-dep-airport="@flight.DepartureAirportCode.ToLower() @flight.DepartureAirportName.ToLower()"
-                                data-arr-airport="@flight.ArrivalAirportCode.ToLower() @flight.ArrivalAirportName.ToLower()"
-                                data-airline="@flight.AirlineCode"
-                                data-status="@flight.Status">
-
-                                @* Uçuş No *@
-                                <td>
-                                    <div class="flight-no">
-                                        <span class="flight-no-dot"></span>
-                                        @flight.FlightNumber
-                                    </div>
-                                </td>
-
-                                @* Havayolu *@
-                                <td>
-                                    <span class="airline-chip">@flight.AirlineCode</span>
-                                </td>
-
-                                @* Kalkış *@
-                                <td>
-                                    <div class="airport-cell">
-                                        <span class="airport-code">@flight.DepartureAirportCode</span>
-                                        <span class="airport-name">@flight.DepartureAirportName</span>
-                                    </div>
-                                </td>
-
-                                @* Varış *@
-                                <td>
-                                    <div class="airport-cell">
-                                        <span class="airport-code">@flight.ArrivalAirportCode</span>
-                                        <span class="airport-name">@flight.ArrivalAirportName</span>
-                                    </div>
-                                </td>
-
-                                @* Kalkış Saati *@
-                                <td>
-                                    <span class="time-cell">@flight.DepartureTime.ToString("HH:mm")</span>
-                                    <span class="date-sub">@flight.DepartureTime.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR"))</span>
-                                </td>
-
-                                @* Varış Saati *@
-                                <td>
-                                    <span class="time-cell">@flight.ArrivalTime.ToString("HH:mm")</span>
-                                    <span class="date-sub">@flight.ArrivalTime.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR"))</span>
-                                </td>
-
-                                @* Süre *@
-                                <td>
-                                    <span class="duration-cell">
-                                        <i class="bi bi-clock"></i> @durStr
-                                    </span>
-                                </td>
-
-                                @* Kapasite + Doluluk Barı *@
-                                <td>
-                                    <div class="capacity-cell">
-                                        <div class="capacity-text">
-                                            <span class="cap-available">@flight.AvailableSeats</span>
-                                            <span class="cap-sep">/</span>
-                                            <span class="cap-total">@flight.TotalSeats</span>
-                                        </div>
-                                        <div class="cap-bar">
-                                            <div class="cap-fill @(occupancy >= 90 ? "cap-critical" : occupancy >= 70 ? "cap-warning" : "cap-ok")"
-                                                 style="width:@occupancy%;"
-                                                 title="Doluluk: %@occupancy"></div>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                @* Fiyat *@
-                                <td>
-                                    <span class="price-cell">
-                                        @flight.BasePrice.ToString("N0") <small>@flight.Currency</small>
-                                    </span>
-                                </td>
-
-                                @* Durum *@
-                                <td>
-                                    <span class="status-badge @css">
-                                        <span class="dot"></span>@label
-                                    </span>
-                                </td>
-
-                                @* İşlemler *@
-                                <td>
-                                    <div class="actions-cell">
-                                        <a asp-area="Admin"
-                                           asp-controller="Flights"
-                                           asp-action="Detail"
-                                           asp-route-id="@flight.FlightId"
-                                           class="act-btn act-view"
-                                           title="Görüntüle">
-                                            <i class="bi bi-eye-fill"></i>
-                                            <span class="btn-label">Görüntüle</span>
-                                        </a>
-                                        <a asp-area="Admin"
-                                           asp-controller="Flights"
-                                           asp-action="Edit"
-                                           asp-route-id="@flight.FlightId"
-                                           class="act-btn act-edit"
-                                           title="Düzenle">
-                                            <i class="bi bi-pencil-fill"></i>
-                                            <span class="btn-label">Düzenle</span>
-                                        </a>
-                                        <button class="act-btn act-del"
-                                                title="Sil"
-                                                onclick="confirmDelete('@flight.FlightId', '@flight.FlightNumber')">
-                                            <i class="bi bi-trash-fill"></i>
-                                            <span class="btn-label">Sil</span>
-                                        </button>
-                                    </div>
-                                </td>
-
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        @* ── Pagination ── *@
-        <div class="table-card-footer">
-            <span class="footer-info" id="footerInfo"></span>
-            <ul class="pagination-list" id="paginationList"></ul>
-        </div>
-
-    </div>@* /table-card *@
+</div>@* /table-card *@
 
 @* ── Delete Confirm Modal ─────────────────────────────────── *@
 <div class="modal-overlay" id="deleteModal">
