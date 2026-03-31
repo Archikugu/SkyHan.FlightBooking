@@ -21,7 +21,9 @@ namespace SkyHan.FlightBooking.Web
             builder.Services.Configure<CollectionNames>(builder.Configuration.GetSection("CollectionNames"));
             builder.Services.AddSingleton<MongoDbContext>();
             builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IFlightService, FlightManager>();
+            builder.Services.AddScoped<IBookingService, BookingManager>();
 
             var app = builder.Build();
 

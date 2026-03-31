@@ -1,13 +1,23 @@
-
+@using System.Globalization
 @{
     ViewData["Title"] = "CreateBooking";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    decimal basePriceValue = ViewBag.BasePrice ?? 246m;
+    string currencyValue = ViewBag.Currency ?? "EUR";
 }
 @section Styles {
     <link rel="stylesheet" href="~/css/admin/create-booking.css" asp-append-version="true" />
 }
 
-    <div class="container-fluid mt-4 px-4 booking-page">
+<form id="bookingForm" asp-area="Admin" asp-controller="Booking" asp-action="CreateBooking" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="FlightId" value="@ViewBag.FlightId" />
+    <input type="hidden" name="Status" value="Confirmed" />
+    <input type="hidden" id="totalPriceInput" name="TotalPrice" value="@basePriceValue.ToString(CultureInfo.InvariantCulture)" />
+
+    <div class="container-fluid mt-4 px-4 booking-page"
+         data-base-price="@basePriceValue.ToString(CultureInfo.InvariantCulture)"
+         data-currency="@currencyValue">
 
         @* ── Sayfa Başlığı ── *@
         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -22,7 +32,7 @@
                 <h4 class="fw-bold mb-0" style="color:#0f172a;">Rezervasyon Oluştur</h4>
                 <p class="text-muted mb-0 tiny-muted">Yeni bir uçuş rezervasyonu oluşturmak için formu doldurun.</p>
             </div>
-            <a href="#" class="btn btn-outline-secondary btn-sm">
+            <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left me-1"></i> Geri Dön
             </a>
         </div>
@@ -49,19 +59,19 @@
                         <div class="row g-3">
                             <div class="col-md-3 col-6">
                                 <label class="form-label fw-semibold text-muted" style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;">Uçuş No</label>
-                                <input type="text" class="form-control form-control-sm bg-light border-0 fw-bold" value="TK1932" readonly style="border-radius:8px;font-size:14px;color:#0f172a;" />
+                            <input type="text" class="form-control form-control-sm bg-light border-0 fw-bold" value="@ViewBag.FlightNumber" readonly style="border-radius:8px;font-size:14px;color:#0f172a;" />
                             </div>
                             <div class="col-md-3 col-6">
                                 <label class="form-label fw-semibold text-muted" style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;">Kalkış</label>
-                                <input type="text" class="form-control form-control-sm bg-light border-0" value="IST – İstanbul" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
+                            <input type="text" class="form-control form-control-sm bg-light border-0" value="@ViewBag.DepartureAirportCode - @ViewBag.DepartureAirportName" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
                             </div>
                             <div class="col-md-3 col-6">
                                 <label class="form-label fw-semibold text-muted" style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;">Varış</label>
-                                <input type="text" class="form-control form-control-sm bg-light border-0" value="LHR – Londra" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
+                            <input type="text" class="form-control form-control-sm bg-light border-0" value="@ViewBag.ArrivalAirportCode - @ViewBag.ArrivalAirportName" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
                             </div>
                             <div class="col-md-3 col-6">
-                                <label class="form-label fw-semibold text-muted" style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;">Tarih</label>
-                                <input type="text" class="form-control form-control-sm bg-light border-0" value="06 Nis 2025 · 08:30" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
+                                <label class="form-label fw-semibold text-muted" style="font-size:11px;letter-spacing:.5px;text-transform:uppercase;">Uçuş Tarihleri</label>
+                            <input type="text" class="form-control form-control-sm bg-light border-0" value="@ViewBag.DepartureTime.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR")) → @ViewBag.ArrivalTime.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))" readonly style="border-radius:8px;font-size:13px;color:#0f172a;" />
                             </div>
                         </div>
 
@@ -70,17 +80,17 @@
                              style="background:#f8fafc;border:1px solid #f1f5f9;">
                             <span class="badge fw-bold px-3 py-2 rounded-3" style="background:#1a2e4a;font-size:12px;">TK</span>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="fw-bold" style="font-size:18px;color:#0f172a;">IST</span>
+                                <span class="fw-bold" style="font-size:18px;color:#0f172a;">@ViewBag.DepartureAirportCode</span>
                                 <div class="d-flex align-items-center gap-1 text-muted">
                                     <div style="width:28px;height:1px;background:#e2e8f0;"></div>
                                     <i class="bi bi-airplane-fill" style="font-size:13px;color:#3b82f6;"></i>
                                     <div style="width:28px;height:1px;background:#e2e8f0;"></div>
                                 </div>
-                                <span class="fw-bold" style="font-size:18px;color:#0f172a;">LHR</span>
+                                <span class="fw-bold" style="font-size:18px;color:#0f172a;">@ViewBag.ArrivalAirportCode</span>
                             </div>
-                            <span class="text-muted" style="font-size:13px;">08:30 → 11:00</span>
+                            <span class="text-muted" style="font-size:13px;">@ViewBag.DepartureTime.ToString("dd MMM HH:mm", new System.Globalization.CultureInfo("tr-TR")) → @ViewBag.ArrivalTime.ToString("dd MMM HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
                             <span class="ms-auto badge bg-success-subtle text-success fw-semibold px-3 py-2 rounded-3">
-                                <i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Planlandı
+                                <i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> @ViewBag.Status
                             </span>
                         </div>
                     </div>
@@ -109,8 +119,9 @@
                                     <span class="input-group-text bg-light border-end-0" style="border-radius:8px 0 0 8px;border-color:#e5e7eb;">
                                         <i class="bi bi-person text-muted"></i>
                                     </span>
-                                    <input type="text" class="form-control border-start-0"
+                                    <input type="text" name="ContactName" class="form-control border-start-0"
                                            placeholder="Ahmet Yılmaz"
+                                           required
                                            style="border-radius:0 8px 8px 0;border-color:#e5e7eb;font-size:13.5px;" />
                                 </div>
                             </div>
@@ -122,8 +133,9 @@
                                     <span class="input-group-text bg-light border-end-0" style="border-radius:8px 0 0 8px;border-color:#e5e7eb;">
                                         <i class="bi bi-envelope text-muted"></i>
                                     </span>
-                                    <input type="email" class="form-control border-start-0"
+                                    <input type="email" name="ContactEmail" class="form-control border-start-0"
                                            placeholder="ornek@email.com"
+                                           required
                                            style="border-radius:0 8px 8px 0;border-color:#e5e7eb;font-size:13.5px;" />
                                 </div>
                             </div>
@@ -135,8 +147,9 @@
                                     <span class="input-group-text bg-light border-end-0" style="border-radius:8px 0 0 8px;border-color:#e5e7eb;">
                                         <i class="bi bi-telephone text-muted"></i>
                                     </span>
-                                    <input type="tel" class="form-control border-start-0"
+                                    <input type="tel" name="ContactPhone" class="form-control border-start-0"
                                            placeholder="+90 5XX XXX XX XX"
+                                           required
                                            style="border-radius:0 8px 8px 0;border-color:#e5e7eb;font-size:13.5px;" />
                                 </div>
                             </div>
@@ -195,15 +208,19 @@
                             @* Uçuş *@
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                                 <span class="text-muted" style="font-size:13px;">Uçuş</span>
-                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">TK1932</span>
+                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">@ViewBag.FlightNumber</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                                 <span class="text-muted" style="font-size:13px;">Güzergah</span>
-                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">IST → LHR</span>
+                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">@ViewBag.DepartureAirportCode → @ViewBag.ArrivalAirportCode</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                <span class="text-muted" style="font-size:13px;">Tarih</span>
-                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">06 Nis 2025</span>
+                                <span class="text-muted" style="font-size:13px;">Kalkış Tarihi</span>
+                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">@ViewBag.DepartureTime.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="text-muted" style="font-size:13px;">Varış Tarihi</span>
+                                <span class="fw-semibold" style="font-size:13px;color:#0f172a;">@ViewBag.ArrivalTime.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
                             </div>
 
                             @* Yolcu Sayısı *@
@@ -216,22 +233,22 @@
                             <div class="mt-3 p-3 rounded-3" style="background:#f8fafc;">
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted" style="font-size:12.5px;">Yetişkin (x<span id="adultCount">1</span>)</span>
-                                    <span style="font-size:12.5px;color:#374151;"><span id="adultPrice">246</span> EUR</span>
+                                    <span style="font-size:12.5px;color:#374151;"><span id="adultPrice">@basePriceValue</span> @currencyValue</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2" id="childRow" style="display:none!important;">
                                     <span class="text-muted" style="font-size:12.5px;">Çocuk (x<span id="childCount">0</span>)</span>
-                                    <span style="font-size:12.5px;color:#374151;"><span id="childPrice">0</span> EUR</span>
+                                    <span style="font-size:12.5px;color:#374151;"><span id="childPrice">0</span> @currencyValue</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2" id="infantRow" style="display:none!important;">
                                     <span class="text-muted" style="font-size:12.5px;">Bebek (x<span id="infantCount">0</span>)</span>
-                                    <span style="font-size:12.5px;color:#374151;"><span id="infantPrice">0</span> EUR</span>
+                                    <span style="font-size:12.5px;color:#374151;"><span id="infantPrice">0</span> @currencyValue</span>
                                 </div>
                             </div>
 
                             @* Toplam *@
                             <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
                                 <span class="fw-bold" style="font-size:14px;color:#0f172a;">Toplam Tutar</span>
-                                <span class="fw-bold" style="font-size:18px;color:#2563eb;" id="totalPrice">246 EUR</span>
+                                <span class="fw-bold" style="font-size:18px;color:#2563eb;" id="totalPrice">@basePriceValue @currencyValue</span>
                             </div>
                         </div>
                     </div>
@@ -241,7 +258,7 @@
                         <button type="submit" class="btn btn-primary fw-semibold" style="border-radius:10px;padding:11px;">
                             <i class="bi bi-check-circle-fill me-2"></i> Rezervasyonu Oluştur
                         </button>
-                        <a href="#" class="btn btn-outline-secondary fw-semibold" style="border-radius:10px;padding:11px;">
+                        <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList" class="btn btn-outline-secondary fw-semibold" style="border-radius:10px;padding:11px;">
                             <i class="bi bi-x-circle me-2"></i> İptal
                         </a>
                     </div>
@@ -257,6 +274,7 @@
 
         </div>
     </div>
+</form>
 
 @section Scripts {
     <script src="~/js/admin/create-booking.js" asp-append-version="true"></script>

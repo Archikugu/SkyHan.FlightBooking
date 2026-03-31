@@ -5,4 +5,5 @@ namespace SkyHan.FlightBooking.DataAccess.Settings.Concrete;
 public class CollectionNames : ICollectionNames
 {
     public string FlightCollectionName { get; set; } = "Flights";
+    public string BookingCollectionName { get; set; } = "Bookings";
 }
