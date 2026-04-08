@@ -8,10 +8,12 @@ namespace SkyHan.FlightBooking.Web.Areas.Admin.Controllers;
 public class FlightController : Controller
 {
     readonly IFlightService _flightService;
+    readonly IBookingService _bookingService;
 
-    public FlightController(IFlightService flightService)
+    public FlightController(IFlightService flightService, IBookingService bookingService)
     {
         _flightService = flightService;
+        _bookingService = bookingService;
     }
 
     public async Task<IActionResult> FlightList()
@@ -31,6 +33,34 @@ public class FlightController : Controller
     {
         await _flightService.CreateAsync(createFlightDto);
         return RedirectToAction(nameof(FlightList));
+    }
+
+    public async Task<IActionResult> FlightDetail(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            TempData["ErrorMessage"] = "Ucus bulunamadi.";
+            return RedirectToAction(nameof(FlightList));
+        }
+
+        var flight = await _flightService.GetByIdAsync(id);
+        if (flight is null)
+        {
+            TempData["ErrorMessage"] = "Ucus bulunamadi.";
+            return RedirectToAction(nameof(FlightList));
+        }
+
+        ViewBag.FlightNumber = flight.FlightNumber;
+        ViewBag.AirlineCode = flight.AirlineCode;
+        ViewBag.DepartureAirportCode = flight.DepartureAirportCode;
+        ViewBag.ArrivalAirportCode = flight.ArrivalAirportCode;
+        ViewBag.DepartureTime = flight.DepartureTime;
+        ViewBag.ArrivalTime = flight.ArrivalTime;
+        ViewBag.TotalSeats = flight.TotalSeats;
+        ViewBag.Status = flight.Status;
+
+        var passengers = await _bookingService.GetPassengersByFlightIdAsync(id);
+        return View(passengers);
     }
 
 }

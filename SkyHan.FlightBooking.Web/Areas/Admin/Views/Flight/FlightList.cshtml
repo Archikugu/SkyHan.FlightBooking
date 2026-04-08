@@ -263,8 +263,8 @@
                             <td>
                                 <div class="actions-cell">
                                     <a asp-area="Admin"
-                                       asp-controller="Flights"
-                                       asp-action="Detail"
+                                       asp-controller="Flight"
+                                       asp-action="FlightDetail"
                                        asp-route-id="@flight.FlightId"
                                        class="act-btn act-view"
                                        title="Görüntüle">
@@ -272,7 +272,7 @@
                                         <span class="btn-label">Görüntüle</span>
                                     </a>
                                     <a asp-area="Admin"
-                                       asp-controller="Flights"
+                                       asp-controller="Flight"
                                        asp-action="Edit"
                                        asp-route-id="@flight.FlightId"
                                        class="act-btn act-edit"

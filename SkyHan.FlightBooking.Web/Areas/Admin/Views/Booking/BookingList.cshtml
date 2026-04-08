@@ -1,7 +1,9 @@
-
+@using System.Linq
+@model List<SkyHan.FlightBooking.Business.Dtos.Booking.BookingListDto>
 @{
     ViewData["Title"] = "BookingList";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var totalCount = Model?.Count ?? 0;
 }
 
 @section Styles {
@@ -72,7 +74,7 @@
             <span class="fw-semibold" style="font-size:13.5px;color:#0f172a;">
                 Tüm Rezervasyonlar
             </span>
-            <span class="badge bg-primary-subtle text-primary rounded-pill px-3" id="totalCount" style="font-size:12px;">20 kayıt</span>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3" id="totalCount" style="font-size:12px;">@totalCount kayıt</span>
         </div>
 
         <div class="table-responsive">
@@ -90,6 +92,98 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody" style="font-size:13.5px;">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr id="noDataRow">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox booking-empty-icon"></i>
+                                Kayıt bulunamadı.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        var rowNo = 0;
+                        foreach (var item in Model.OrderByDescending(x => x.BookingDate))
+                        {
+                            rowNo++;
+                            var statusText = item.Status ?? string.Empty;
+                            var statusClass = statusText switch
+                            {
+                                "Confirmed" => "bg-success-subtle text-success",
+                                "Pending" => "bg-warning-subtle text-warning",
+                                "Cancelled" => "bg-danger-subtle text-danger",
+                                _ => "bg-secondary-subtle text-secondary"
+                            };
+                            var statusIcon = statusText switch
+                            {
+                                "Confirmed" => "bi-check-circle-fill",
+                                "Pending" => "bi-clock-fill",
+                                "Cancelled" => "bi-x-circle-fill",
+                                _ => "bi-circle"
+                            };
+                            var statusLabel = statusText switch
+                            {
+                                "Confirmed" => "Onaylandı",
+                                "Pending" => "Beklemede",
+                                "Cancelled" => "İptal",
+                                _ => statusText
+                            };
+
+                            var initials = string.Join("", (item.ContactName ?? string.Empty)
+                                .Split(' ', System.StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Substring(0, 1).ToUpperInvariant())
+                                .Take(2));
+                            if (string.IsNullOrWhiteSpace(initials))
+                            {
+                                initials = "NA";
+                            }
+
+                            <tr class="booking-row"
+                                data-booking-id="@item.BookingId"
+                                data-flight="@item.FlightId"
+                                data-status="@statusText"
+                                data-date="@item.BookingDate.ToString("yyyy-MM-dd")">
+                                <td class="booking-cell-index">@rowNo</td>
+                                <td class="booking-cell">
+                                    <span class="booking-flight-code">@item.FlightId</span>
+                                    <div class="booking-id-sub">@item.BookingId</div>
+                                </td>
+                                <td class="booking-cell">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="booking-name-badge">@initials</div>
+                                        <span class="booking-name-text">@item.ContactName</span>
+                                    </div>
+                                </td>
+                                <td class="booking-cell">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <i class="bi bi-people-fill text-muted booking-mini-icon"></i>
+                                        <span class="booking-passenger-count">@item.PassengerCount</span>
+                                        <span class="booking-passenger-label">yolcu</span>
+                                    </div>
+                                </td>
+                                <td class="booking-cell"><span class="booking-price">@item.TotalPrice.ToString("N0")</span></td>
+                                <td class="booking-cell"><span class="booking-date">@item.BookingDate.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span></td>
+                                <td class="booking-cell">
+                                    <span class="badge @statusClass d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill booking-status-badge">
+                                        <i class="bi @statusIcon booking-status-icon"></i>@statusLabel
+                                    </span>
+                                </td>
+                                <td class="booking-cell">
+                                    <div class="d-flex gap-1">
+                                        <a href="#" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 booking-action-btn">
+                                            <i class="bi bi-eye-fill booking-action-icon"></i> Detay
+                                        </a>
+                                        <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 booking-action-btn"
+                                                type="button"
+                                                onclick="cancelBooking('@item.BookingId')">
+                                            <i class="bi bi-x-circle-fill booking-action-icon"></i> İptal
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </div>

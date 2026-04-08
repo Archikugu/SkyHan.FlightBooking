@@ -1,9 +1,11 @@
 using Mapster;
 using SkyHan.FlightBooking.Business.Dtos.Booking;
+using SkyHan.FlightBooking.Business.Dtos.Passenger;
 using SkyHan.FlightBooking.Business.Services.Abstract;
 using SkyHan.FlightBooking.DataAccess.Repositories.Abstract;
 using SkyHan.FlightBooking.Entity.Concrete;
 using System;
+using System.Linq;
 
 namespace SkyHan.FlightBooking.Business.Services.Concrete;
 
@@ -31,6 +33,34 @@ public class BookingManager : IBookingService
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
         return booking?.Adapt<BookingDetailDto>();
     }
+
+    public async Task<List<PassengerDto>> GetPassengersByFlightIdAsync(string flightId)
+    {
+        if (string.IsNullOrWhiteSpace(flightId))
+        {
+            return [];
+        }
+
+        var bookings = await _bookingRepository.GetAllAsync();
+        return bookings
+            .Where(x => x.FlightId == flightId)
+            .SelectMany(x => x.Passengers.Select(p => new PassengerDto
+            {
+                Name = p.Name,
+                Surname = p.Surname,
+                BirthDate = p.BirthDate,
+                Gender = p.Gender.ToString(),
+                Email = string.IsNullOrWhiteSpace(p.Email) ? x.ContactEmail : p.Email,
+                Phone = string.IsNullOrWhiteSpace(p.Phone) ? x.ContactPhone : p.Phone,
+                PassengerType = p.PassengerType,
+                Pnr = p.Pnr,
+                SeatNumber = p.SeatNumber,
+                CheckInStatus = p.CheckInStatus,
+                PaymentStatus = p.PaymentStatus,
+                TicketStatus = p.TicketStatus
+            }))
+            .ToList();
+    } 
 
     public async Task<BookingDetailDto> CreateAsync(CreateBookingDto createBookingDto)
     {

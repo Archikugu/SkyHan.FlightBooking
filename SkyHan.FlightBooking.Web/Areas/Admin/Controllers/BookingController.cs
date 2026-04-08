@@ -61,7 +61,7 @@ public class BookingController : Controller
 
         try
         {
-            await _bookingService.CreateAsync(createBookingDto);
+            await _bookingService.CreateAsync(createBookingDto);  
             TempData["SuccessMessage"] = "Rezervasyon basariyla olusturuldu.";
             return RedirectToAction(nameof(BookingList));
         }
@@ -71,8 +71,18 @@ public class BookingController : Controller
             return RedirectToAction(nameof(CreateBooking), new { id = createBookingDto.FlightId });
         }
     }
-    public IActionResult BookingList()
+    [HttpGet]
+    public async Task<IActionResult> BookingList()
     {
-        return View();
+        try
+        {
+            var bookings = await _bookingService.GetAllAsync();
+            return View(bookings);
+        }
+        catch (System.Exception)
+        {
+            TempData["ErrorMessage"] = "Rezervasyon listesi getirilirken bir hata olustu.";
+            return View(new List<BookingListDto>());
+        }
     }
 }
