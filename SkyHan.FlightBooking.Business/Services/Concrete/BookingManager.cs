@@ -2,6 +2,7 @@ using Mapster;
 using SkyHan.FlightBooking.Business.Dtos.Booking;
 using SkyHan.FlightBooking.Business.Dtos.Passenger;
 using SkyHan.FlightBooking.Business.Services.Abstract;
+using SkyHan.FlightBooking.Business.Utilities;
 using SkyHan.FlightBooking.DataAccess.Repositories.Abstract;
 using SkyHan.FlightBooking.Entity.Concrete;
 using System;
@@ -60,7 +61,9 @@ public class BookingManager : IBookingService
                 TicketStatus = p.TicketStatus
             }))
             .ToList();
-    } 
+    }
+
+    public Task<string> GenerateUniquePnrNumberAsync() => GenerateUniquePnrAsync();
 
     public async Task<BookingDetailDto> CreateAsync(CreateBookingDto createBookingDto)
     {
@@ -81,9 +84,12 @@ public class BookingManager : IBookingService
             throw new InvalidOperationException("Ucus bulunamadi.");
         }
 
+        var pnrNumber = await GenerateUniquePnrAsync();
+
         var booking = new Booking
         {
             FlightId = createBookingDto.FlightId,
+            PnrNumber = pnrNumber,
             Passengers = passengers.Adapt<List<Passenger>>(),
             ContactName = createBookingDto.ContactName,
             ContactEmail = createBookingDto.ContactEmail,
@@ -105,5 +111,20 @@ public class BookingManager : IBookingService
     public async Task<bool> DeleteAsync(string bookingId)
     {
         return await _bookingRepository.DeleteAsync(bookingId);
+    }
+
+    private async Task<string> GenerateUniquePnrAsync()
+    {
+        const int maxAttempts = 100;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var candidate = PnrGenerator.GenerateRandomCode();
+            if (!await _bookingRepository.ExistsWithPnrNumberAsync(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new InvalidOperationException("Benzersiz PNR üretilemedi; lütfen tekrar deneyin.");
     }
 }

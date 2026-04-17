@@ -12,7 +12,7 @@ public class Booking
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string FlightId { get; set; } = string.Empty;
-
+    public string PnrNumber { get; set; } = string.Empty;
     public List<Passenger> Passengers { get; set; } = [];
 
     public string ContactName { get; set; } = string.Empty;

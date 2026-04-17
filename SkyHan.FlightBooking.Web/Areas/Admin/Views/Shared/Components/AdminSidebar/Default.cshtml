@@ -8,6 +8,8 @@
     var isDashboard = string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase)
                       && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
     var isFlight = string.Equals(currentController, "Flight", StringComparison.OrdinalIgnoreCase);
+    var isBooking = string.Equals(currentController, "Booking", StringComparison.OrdinalIgnoreCase);
+    var isCheckIn = string.Equals(currentController, "CheckIn", StringComparison.OrdinalIgnoreCase);
 }
 
 <aside class="sidebar" id="sidebar">
@@ -18,7 +20,12 @@
         </div>
     </a>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Yönetim menüsü">
+        <div class="sidebar-search-wrap">
+            <i class="bi bi-search sidebar-search-icon"></i>
+            <input id="sidebarSearchInput" class="sidebar-search-input" type="text" placeholder="Menüde ara..." />
+        </div>
+
         <div class="nav-label">ANA MENÜ</div>
 
         <div class="nav-item-wrap">
@@ -30,7 +37,7 @@
         </div>
 
         <div class="nav-item-wrap">
-            <div class="nav-link-item @(isFlight ? "active" : "")" id="flights-toggle" onclick="toggleSub(this,'flights-sub')">
+            <div class="nav-link-item @(isFlight ? "active" : "")" id="flights-toggle" data-sub-id="flights-sub" onclick="toggleSub(this,'flights-sub')">
                 <i class="bi bi-airplane-fill icon"></i>
                 <span class="label">Flights</span>
                 <i class="bi bi-chevron-down chevron @(isFlight ? "open" : "") ms-auto" id="flights-chev"></i>
@@ -60,14 +67,14 @@
         <div class="nav-label">OPERASYONLAR</div>
 
         <div class="nav-item-wrap">
-            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+            <a class="nav-link-item @(isCheckIn ? "active" : "")" asp-area="Admin" asp-controller="CheckIn" asp-action="Index">
                 <i class="bi bi-people-fill icon"></i>
-                <span class="label">Passengers</span>
+                <span class="label">Check-In</span>
             </a>
         </div>
 
         <div class="nav-item-wrap">
-            <a class="nav-link-item" href="#" onclick="setActive(this);return false;">
+            <a class="nav-link-item @(isBooking ? "active" : "")" asp-area="Admin" asp-controller="Booking" asp-action="BookingList">
                 <i class="bi bi-ticket-detailed-fill icon"></i>
                 <span class="label">Bookings</span>
                 <span class="nav-badge">38</span>
@@ -75,13 +82,13 @@
         </div>
 
         <div class="nav-item-wrap">
-            <div class="nav-link-item" onclick="toggleSub(this,'checkin-sub')">
+            <div class="nav-link-item @(isCheckIn ? "active" : "")" data-sub-id="checkin-sub" onclick="toggleSub(this,'checkin-sub')">
                 <i class="bi bi-check-square-fill icon"></i>
                 <span class="label">Check-In Mgmt</span>
-                <i class="bi bi-chevron-down chevron ms-auto"></i>
+                <i class="bi bi-chevron-down chevron @(isCheckIn ? "open" : "") ms-auto"></i>
             </div>
-            <div class="sub-menu" id="checkin-sub">
-                <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Online Check-In</a>
+            <div class="sub-menu @(isCheckIn ? "open" : "")" id="checkin-sub">
+                <a class="sub-menu-link @(isCheckIn ? "active" : "")" asp-area="Admin" asp-controller="CheckIn" asp-action="Index"><i class="bi bi-dot"></i>Online Check-In</a>
                 <a class="sub-menu-link" href="#" onclick="return false;"><i class="bi bi-dot"></i>Kiosk Yönetimi</a>
             </div>
         </div>

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -27,6 +28,22 @@ public class BookingRepository : IBookingRepository
     public async Task<Booking?> GetByIdAsync(string bookingId)
     {
         return await _bookingCollection.Find(x => x.BookingId == bookingId).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> ExistsWithPnrNumberAsync(string pnrNumber)
+    {
+        if (string.IsNullOrWhiteSpace(pnrNumber))
+        {
+            return false;
+        }
+
+        var normalized = pnrNumber.Trim().ToUpperInvariant();
+        var escaped = Regex.Escape(normalized);
+        var filter = Builders<Booking>.Filter.Regex(
+            x => x.PnrNumber,
+            new BsonRegularExpression($"^{escaped}$", "i"));
+        var count = await _bookingCollection.CountDocumentsAsync(filter);
+        return count > 0;
     }
 
     public async Task<Booking> CreateAsync(Booking booking)

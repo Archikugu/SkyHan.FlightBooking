@@ -1,0 +1,566 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/checkin.css" />
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="ci-page" id="checkinPage" data-base-price="@ViewBag.BasePrice" data-currency="@ViewBag.Currency">
+
+            @* ── Başlık ── *@
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1" style="font-size:12.5px;">
+                            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Dashboard</a></li>
+                            <li class="breadcrumb-item">
+                                <a asp-area="Admin" asp-controller="Bookings" asp-action="BookingList" class="text-decoration-none text-muted">Rezervasyonlar</a>
+                            </li>
+                            <li class="breadcrumb-item active">Check-In</li>
+                        </ol>
+                    </nav>
+                    <h4 class="fw-bold mb-1" style="color:#0f172a;">Check-In İşlemi</h4>
+                    <p class="text-muted mb-0" style="font-size:13px;">Adımları sırasıyla tamamlayın ve check-in'i onaylayın.</p>
+                </div>
+                <a asp-area="Admin" asp-controller="Bookings" asp-action="BookingList"
+                   class="btn btn-outline-secondary btn-sm px-3" style="border-radius:8px;font-size:13px;">
+                    <i class="bi bi-arrow-left me-1"></i> Geri
+                </a>
+            </div>
+
+            @* ── Flight Banner ── *@
+            <div class="ci-banner">
+                <div class="ci-banner-top">
+                    <div class="ci-route">
+                        <div style="text-align:center;">
+                            <div class="ci-apt-code">@ViewBag.DepartureAirportCode</div>
+                            <div class="ci-apt-name">@ViewBag.DepartureAirportName</div>
+                        </div>
+                        <div class="ci-route-mid">
+                            <div class="ci-route-line"><i class="bi bi-airplane-fill"></i></div>
+                            <div class="ci-route-dur" id="bannerDur">— dk</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div class="ci-apt-code">@ViewBag.ArrivalAirportCode</div>
+                            <div class="ci-apt-name">@ViewBag.ArrivalAirportName</div>
+                        </div>
+                    </div>
+                    <span class="ci-status-badge">
+                        <span class="dot"></span> Planlandı
+                    </span>
+                </div>
+                <hr class="ci-bp-divider" />
+                <div class="ci-banner-meta">
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">Uçuş Kodu</span>
+                        <span class="ci-meta-val">@ViewBag.FlightNumber</span>
+                    </div>
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">Tarih</span>
+                        <span class="ci-meta-val">
+                            @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR")) : "—")
+                        </span>
+                    </div>
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">Saat</span>
+                        <span class="ci-meta-val">
+                            @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("HH:mm") : "—") →
+                            @(ViewBag.ArrivalTime != null ? ((DateTime)ViewBag.ArrivalTime).ToString("HH:mm") : "—")
+                        </span>
+                    </div>
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">Yolcu</span>
+                        <span class="ci-meta-val">@ViewBag.PassengerName</span>
+                    </div>
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">PNR</span>
+                        <span class="ci-meta-val" style="font-family:monospace;letter-spacing:.8px;">@ViewBag.Pnr</span>
+                    </div>
+                    <div class="ci-meta-item">
+                        <span class="ci-meta-key">Kapı</span>
+                        <span class="ci-meta-val">@(ViewBag.Gate ?? "—")</span>
+                    </div>
+                </div>
+            </div>
+
+            @* ── Layout ── *@
+            <div class="ci-layout">
+
+                @* ── Sol: Sekmeli Form ── *@
+                <div class="ci-col-main">
+
+                    @* Step Bar *@
+                    <div class="tab-stepper" id="tabStepper">
+                        <div class="tab-step active" id="step-tab-1" onclick="goTab(1)">
+                            <div class="tab-step-num" id="step-num-1">1</div>
+                            <div class="tab-step-text">
+                                <div class="tab-step-title">Bagaj</div>
+                                <div class="tab-step-desc">Ağırlık seçimi</div>
+                            </div>
+                        </div>
+                        <div class="tab-step" id="step-tab-2" onclick="goTab(2)">
+                            <div class="tab-step-num" id="step-num-2">2</div>
+                            <div class="tab-step-text">
+                                <div class="tab-step-title">Koltuk</div>
+                                <div class="tab-step-desc">Koltuk seç</div>
+                            </div>
+                        </div>
+                        <div class="tab-step" id="step-tab-3" onclick="goTab(3)">
+                            <div class="tab-step-num" id="step-num-3">3</div>
+                            <div class="tab-step-text">
+                                <div class="tab-step-title">Yemek</div>
+                                <div class="tab-step-desc">Menü seçimi</div>
+                            </div>
+                        </div>
+                        <div class="tab-step" id="step-tab-4" onclick="goTab(4)">
+                            <div class="tab-step-num" id="step-num-4">4</div>
+                            <div class="tab-step-text">
+                                <div class="tab-step-title">Hizmetler</div>
+                                <div class="tab-step-desc">Ekstra seç</div>
+                            </div>
+                        </div>
+                        <div class="tab-step" id="step-tab-5" onclick="goTab(5)">
+                            <div class="tab-step-num" id="step-num-5">5</div>
+                            <div class="tab-step-text">
+                                <div class="tab-step-title">Onay</div>
+                                <div class="tab-step-desc">Gözden geçir</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Panel Wrapper *@
+                    <div class="tab-panels">
+
+                        @* ══════════════════════════════════════════════
+                   SEKME 1: BAGAJ
+                ══════════════════════════════════════════════ *@
+                        <div class="tab-panel active" id="panel-1">
+                            <div class="tab-panel-title">Bagaj Seçimi</div>
+                            <div class="tab-panel-desc">Yolculuğunuz için uygun bagaj seçeneğini belirleyin.</div>
+
+                            @* Kabin Bagajı *@
+                            <div class="baggage-section">
+                                <div class="baggage-section-title">
+                                    <i class="bi bi-briefcase-fill" style="color:#2563eb;"></i>
+                                    Kabin Bagajı
+                                    <span style="font-size:11px;color:#94a3b8;font-weight:400;">(uçağa alınabilir)</span>
+                                </div>
+                                <div class="baggage-cards">
+                                    <label class="baggage-card selected" id="cabin-free" onclick="selectBaggage('cabin','free',0)">
+                                        <input type="radio" name="cabin_bag" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">🎒</div>
+                                        <div class="bc-name">Kişisel Eşya</div>
+                                        <div class="bc-sub">Maks. 40×30×15 cm · 6 kg</div>
+                                        <div class="bc-price" style="color:#16a34a;">Ücretsiz</div>
+                                    </label>
+                                    <label class="baggage-card" id="cabin-small" onclick="selectBaggage('cabin','small',80)">
+                                        <input type="radio" name="cabin_bag" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">💼</div>
+                                        <div class="bc-name">Kabin Valizi (S)</div>
+                                        <div class="bc-sub">Maks. 55×40×20 cm · 8 kg</div>
+                                        <div class="bc-price">+ 80 @ViewBag.Currency</div>
+                                    </label>
+                                    <label class="baggage-card" id="cabin-large" onclick="selectBaggage('cabin','large',120)">
+                                        <input type="radio" name="cabin_bag" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">🧳</div>
+                                        <div class="bc-name">Kabin Valizi (L)</div>
+                                        <div class="bc-sub">Maks. 55×40×25 cm · 10 kg</div>
+                                        <div class="bc-price">+ 120 @ViewBag.Currency</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            @* Uçak Altı Bagaj + Slider *@
+                            <div class="baggage-section">
+                                <div class="baggage-section-title">
+                                    <i class="bi bi-archive-fill" style="color:#7c3aed;"></i>
+                                    Uçak Altı Bagaj
+                                    <span style="font-size:11px;color:#94a3b8;font-weight:400;">(ambar bagajı)</span>
+                                </div>
+
+                                <div class="kg-slider-wrap" id="hold-slider-wrap">
+                                    <div class="kg-slider-header">
+                                        <span class="kg-slider-label">Bagaj Ağırlığı Seçin</span>
+                                        <span class="kg-display" id="holdKgDisplay">0 kg</span>
+                                    </div>
+                                    <input type="range" class="kg-slider" id="holdKgSlider"
+                                           min="0" max="32" step="8" value="0"
+                                           oninput="updateHoldSlider(this.value)" />
+                                    <div class="kg-ticks">
+                                        <span class="kg-tick">0 kg<br><span style="color:#16a34a;font-size:9px;">Ücretsiz</span></span>
+                                        <span class="kg-tick">8 kg<br><span style="font-size:9px;">100 @ViewBag.Currency</span></span>
+                                        <span class="kg-tick">16 kg<br><span style="font-size:9px;">180 @ViewBag.Currency</span></span>
+                                        <span class="kg-tick">24 kg<br><span style="font-size:9px;">240 @ViewBag.Currency</span></span>
+                                        <span class="kg-tick">32 kg<br><span style="font-size:9px;">300 @ViewBag.Currency</span></span>
+                                    </div>
+                                </div>
+
+                                <div class="ci-info-note mt-3">
+                                    <i class="bi bi-info-circle-fill" style="flex-shrink:0;margin-top:1px;"></i>
+                                    <span>Uçak altı bagaj en az 72 saat önceden satın alındığında %20 daha ucuzdur. Check-in'de ek ücret uygulanabilir.</span>
+                                </div>
+                            </div>
+
+                            @* Özel Bagaj *@
+                            <div class="baggage-section">
+                                <div class="baggage-section-title">
+                                    <i class="bi bi-bicycle" style="color:#d97706;"></i>
+                                    Özel & Fazla Bagaj
+                                </div>
+                                <div class="baggage-cards">
+                                    <label class="baggage-card" id="special-sport" onclick="toggleSpecial('sport',150)">
+                                        <input type="checkbox" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">🎿</div>
+                                        <div class="bc-name">Spor Ekipmanı</div>
+                                        <div class="bc-sub">Kayak, sörf, bisiklet vb.</div>
+                                        <div class="bc-price">+ 150 @ViewBag.Currency</div>
+                                    </label>
+                                    <label class="baggage-card" id="special-golf" onclick="toggleSpecial('golf',120)">
+                                        <input type="checkbox" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">⛳</div>
+                                        <div class="bc-name">Golf Ekipmanı</div>
+                                        <div class="bc-sub">Golf çantası + aksesuarlar</div>
+                                        <div class="bc-price">+ 120 @ViewBag.Currency</div>
+                                    </label>
+                                    <label class="baggage-card" id="special-pet" onclick="toggleSpecial('pet',200)">
+                                        <input type="checkbox" />
+                                        <div class="bc-check"><i class="bi bi-check-lg"></i></div>
+                                        <div class="bc-icon">🐾</div>
+                                        <div class="bc-name">Evcil Hayvan</div>
+                                        <div class="bc-sub">Kabin ya da ambar taşımacılık</div>
+                                        <div class="bc-price">+ 200 @ViewBag.Currency</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="tab-nav">
+                                <div></div>
+                                <button class="btn-tab-nav btn-tab-next" onclick="goTab(2)">
+                                    Koltuk Seçimine Geç <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        @* ══════════════════════════════════════════════
+                   SEKME 2: KOLTUK
+                ══════════════════════════════════════════════ *@
+                        <div class="tab-panel" id="panel-2">
+                            <div class="tab-panel-title">Koltuk Seçimi</div>
+                            <div class="tab-panel-desc">Tercih ettiğiniz koltuğu seçin. Gri koltuklar dolu.</div>
+
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                <div class="seat-filters">
+                                    <button class="seat-filter-btn active" onclick="filterSeats('all',this)">Tümü</button>
+                                    <button class="seat-filter-btn" onclick="filterSeats('window',this)">
+                                        <i class="bi bi-square" style="font-size:10px;"></i> Pencere
+                                    </button>
+                                    <button class="seat-filter-btn" onclick="filterSeats('middle',this)">Orta</button>
+                                    <button class="seat-filter-btn" onclick="filterSeats('aisle',this)">Koridor</button>
+                                    <button class="seat-filter-btn" onclick="filterSeats('front',this)">Ön Sıra</button>
+                                    <button class="seat-filter-btn" onclick="filterSeats('exit',this)">
+                                        <i class="bi bi-door-open" style="font-size:10px;"></i> Çıkış Sırası
+                                    </button>
+                                </div>
+                                <span class="sel-seat-tag empty" id="selectedTag">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span id="selectedLabel">Koltuk seçilmedi</span>
+                                </span>
+                            </div>
+
+                            <div class="smap-wrap">
+                                <div class="smap" id="seatMap"></div>
+                            </div>
+
+                            <div class="seat-legend">
+                                <div class="legend-item"><div class="legend-dot"></div><span>Müsait</span></div>
+                                <div class="legend-item"><div class="legend-dot ld-sel"></div><span>Seçili</span></div>
+                                <div class="legend-item"><div class="legend-dot ld-occ"></div><span>Dolu</span></div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background:#fefce8;border-color:#fde68a;"></div>
+                                    <span>Ücretli</span>
+                                </div>
+                            </div>
+
+                            <div class="tab-nav">
+                                <button class="btn-tab-nav btn-tab-prev" onclick="goTab(1)">
+                                    <i class="bi bi-arrow-left"></i> Geri
+                                </button>
+                                <button class="btn-tab-nav btn-tab-next" onclick="goTab(3)">
+                                    Yemek Seçimine Geç <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        @* ══════════════════════════════════════════════
+                   SEKME 3: YEMEK
+                ══════════════════════════════════════════════ *@
+                        <div class="tab-panel" id="panel-3">
+                            <div class="tab-panel-title">Yemek Seçimi</div>
+                            <div class="tab-panel-desc">Uçuşunuz için özel menünüzü seçin. Bir seçim yapılabilir.</div>
+
+                            <div class="meal-categories" id="mealCats">
+                                <button class="meal-cat-btn active" onclick="filterMeals('all',this)">
+                                    <i class="bi bi-grid-fill"></i> Tümü
+                                </button>
+                                <button class="meal-cat-btn" onclick="filterMeals('hot',this)">
+                                    <i class="bi bi-fire"></i> Sıcak
+                                </button>
+                                <button class="meal-cat-btn" onclick="filterMeals('cold',this)">
+                                    <i class="bi bi-snow"></i> Soğuk
+                                </button>
+                                <button class="meal-cat-btn" onclick="filterMeals('veg',this)">
+                                    <i class="bi bi-leaf-fill"></i> Vejetaryen
+                                </button>
+                                <button class="meal-cat-btn" onclick="filterMeals('hal',this)">
+                                    Helal
+                                </button>
+                                <button class="meal-cat-btn" onclick="filterMeals('snack',this)">
+                                    <i class="bi bi-cup-straw"></i> Atıştırmalık
+                                </button>
+                            </div>
+
+                            <div class="meal-grid" id="mealGrid"></div>
+
+                            <div class="tab-nav">
+                                <button class="btn-tab-nav btn-tab-prev" onclick="goTab(2)">
+                                    <i class="bi bi-arrow-left"></i> Geri
+                                </button>
+                                <button class="btn-tab-nav btn-tab-next" onclick="goTab(4)">
+                                    Hizmetlere Geç <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        @* ══════════════════════════════════════════════
+                   SEKME 4: EK HİZMETLER
+                ══════════════════════════════════════════════ *@
+                        <div class="tab-panel" id="panel-4">
+                            <div class="tab-panel-title">Ek Hizmetler</div>
+                            <div class="tab-panel-desc">Yolculuğunuzu konforlu hale getirecek hizmetleri seçin.</div>
+
+                            <div class="extras-grid" id="extrasGrid"></div>
+
+                            <div class="tab-nav">
+                                <button class="btn-tab-nav btn-tab-prev" onclick="goTab(3)">
+                                    <i class="bi bi-arrow-left"></i> Geri
+                                </button>
+                                <button class="btn-tab-nav btn-tab-next" onclick="goTab(5)">
+                                    Özete Geç <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        @* ══════════════════════════════════════════════
+                   SEKME 5: ÖZET & ONAY
+                ══════════════════════════════════════════════ *@
+                        <div class="tab-panel" id="panel-5">
+                            <div class="tab-panel-title">Gözden Geçir & Onayla</div>
+                            <div class="tab-panel-desc">Seçimlerinizi kontrol edin ve check-in işlemini tamamlayın.</div>
+
+                            <div class="summary-grid" id="summaryGrid">
+                                @* JS tarafından doldurulur *@
+                            </div>
+
+                            <div class="ci-warn-note mt-3">
+                                <i class="bi bi-exclamation-triangle-fill" style="flex-shrink:0;margin-top:1px;"></i>
+                                <span>Check-in onaylandıktan sonra koltuk ve bagaj değişikliği yapılamaz. Lütfen bilgileri dikkatlice kontrol edin.</span>
+                            </div>
+
+                            <div class="tab-nav">
+                                <button class="btn-tab-nav btn-tab-prev" onclick="goTab(4)">
+                                    <i class="bi bi-arrow-left"></i> Geri
+                                </button>
+                                <button class="btn-tab-nav btn-tab-next" onclick="completeCheckin()"
+                                        style="background:#16a34a;">
+                                    <i class="bi bi-check-circle-fill"></i> Check-In Tamamla
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                @* ── Sağ: Fiyat + Hızlı Özet ── *@
+                <div class="ci-col-side">
+
+                    @* Fiyat Özeti *@
+                    <div class="ci-side-card">
+                        <div class="ci-side-card-head">
+                            <div class="ci-side-ico" style="background:#f5f3ff;color:#7c3aed;">
+                                <i class="bi bi-receipt-cutoff"></i>
+                            </div>
+                            <div>
+                                <div class="ci-side-title">Fiyat Özeti</div>
+                                <div class="ci-side-desc">Anlık güncellenir</div>
+                            </div>
+                        </div>
+                        <div class="ci-side-body">
+                            <div class="pr-row">
+                                <span class="pr-lbl">Bilet</span>
+                                <span class="pr-val">@ViewBag.BasePrice @ViewBag.Currency</span>
+                            </div>
+                            <div id="priceBreakdown"></div>
+                            <div class="pr-total">
+                                <span class="pr-total-lbl">Toplam</span>
+                                <span class="pr-total-val" id="totalPrice">@ViewBag.BasePrice @ViewBag.Currency</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Seçim Özeti *@
+                    <div class="ci-side-card">
+                        <div class="ci-side-card-head">
+                            <div class="ci-side-ico" style="background:#f0fdf4;color:#16a34a;">
+                                <i class="bi bi-clipboard-check-fill"></i>
+                            </div>
+                            <div>
+                                <div class="ci-side-title">Seçimleriniz</div>
+                            </div>
+                        </div>
+                        <div class="ci-side-body" style="font-size:12.5px;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="color:#94a3b8;">Koltuk</span>
+                                <span class="fw-semibold" id="sideSeat" style="color:#0f172a;">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="color:#94a3b8;">Kabin Bagaj</span>
+                                <span class="fw-semibold" id="sideCabin" style="color:#0f172a;">Kişisel Eşya</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="color:#94a3b8;">Uçak Altı</span>
+                                <span class="fw-semibold" id="sideHold" style="color:#0f172a;">—</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span style="color:#94a3b8;">Yemek</span>
+                                <span class="fw-semibold" id="sideMeal" style="color:#0f172a;">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Progress *@
+                    <div class="ci-side-card">
+                        <div class="ci-side-card-head">
+                            <div class="ci-side-ico" style="background:#eff6ff;color:#2563eb;">
+                                <i class="bi bi-bar-chart-steps"></i>
+                            </div>
+                            <div>
+                                <div class="ci-side-title">İlerleme</div>
+                            </div>
+                        </div>
+                        <div class="ci-side-body">
+                            <div style="height:6px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-bottom:8px;">
+                                <div id="progressBar" style="height:100%;background:linear-gradient(90deg,#2563eb,#3b82f6);border-radius:99px;width:20%;transition:width .4s ease;"></div>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;">
+                                <span id="progressLabel">Adım 1 / 5</span>
+                                <span id="progressPct">%20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+    </div>
+</div>
+
+@* ── Başarı Modalı ── *@
+<div class="ci-modal-overlay" id="ciModal">
+    <div class="ci-modal-box">
+        <div class="ci-modal-ico"><i class="bi bi-check-lg"></i></div>
+        <div class="ci-modal-title">Check-In Tamamlandı! 🎉</div>
+        <div class="ci-modal-desc">
+            Başarıyla check-in yapıldı. Biniş kartınız aşağıda yer almaktadır.
+        </div>
+
+        @* Boarding Pass *@
+        <div class="ci-boarding-pass">
+            <div class="bp-header">
+                <div>
+                    <div class="bp-airline">@ViewBag.AirlineCode — @ViewBag.FlightNumber</div>
+                    <div class="bp-type">Boarding Pass</div>
+                </div>
+                <span class="ci-status-badge" style="font-size:11px;">
+                    <span class="dot"></span> Check-In Yapıldı
+                </span>
+            </div>
+
+            <div class="bp-route">
+                <div>
+                    <div class="bp-apt-code">@ViewBag.DepartureAirportCode</div>
+                    <div class="bp-apt-name">@ViewBag.DepartureAirportName</div>
+                </div>
+                <div class="bp-route-mid">
+                    <div class="bp-route-line"><i class="bi bi-airplane-fill"></i></div>
+                </div>
+                <div>
+                    <div class="bp-apt-code">@ViewBag.ArrivalAirportCode</div>
+                    <div class="bp-apt-name">@ViewBag.ArrivalAirportName</div>
+                </div>
+            </div>
+
+            <hr class="bp-divider" />
+
+            <div class="bp-grid">
+                <div class="bp-item">
+                    <div class="bp-item-key">Yolcu</div>
+                    <div class="bp-item-val">@ViewBag.PassengerName</div>
+                </div>
+                <div class="bp-item">
+                    <div class="bp-item-key">Koltuk</div>
+                    <div class="bp-item-val" id="modalSeat">—</div>
+                </div>
+                <div class="bp-item">
+                    <div class="bp-item-key">Saat</div>
+                    <div class="bp-item-val">
+                        @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("HH:mm") : "—")
+                    </div>
+                </div>
+                <div class="bp-item">
+                    <div class="bp-item-key">Kapı</div>
+                    <div class="bp-item-val">@(ViewBag.Gate ?? "—")</div>
+                </div>
+                <div class="bp-item">
+                    <div class="bp-item-key">Toplam</div>
+                    <div class="bp-item-val" id="modalTotal">—</div>
+                </div>
+                <div class="bp-item">
+                    <div class="bp-item-key">Tarih</div>
+                    <div class="bp-item-val">
+                        @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR")) : "—")
+                    </div>
+                </div>
+            </div>
+
+            <div class="bp-barcode" id="barcodeArea">
+                <div class="bp-barcode-bars" id="barcodeBars"></div>
+                <div class="bp-pnr">@ViewBag.Pnr</div>
+            </div>
+        </div>
+
+        <div class="modal-btn-row">
+            <button class="btn-ci btn-ci-primary flex-fill" onclick="downloadTicket()">
+                <i class="bi bi-download"></i> Bileti İndir
+            </button>
+            <button class="btn-ci btn-ci-success" onclick="printTicket()" style="width:auto;padding:11px 16px;">
+                <i class="bi bi-printer-fill"></i>
+            </button>
+            <button class="btn-ci btn-ci-secondary" onclick="closeModal()" style="width:auto;padding:11px 16px;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/checkin.js"></script>
+}
+

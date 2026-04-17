@@ -42,7 +42,12 @@
                         Seçilen uçuşa ait tüm yolcuları görüntüleyin ve yönetin.
                     </p>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-area="Admin" asp-controller="Booking" asp-action="CreateBooking" asp-route-id="@ViewBag.FlightId"
+                       class="btn btn-primary btn-sm px-3 fw-semibold"
+                       style="border-radius:8px;font-size:13px;">
+                        <i class="bi bi-ticket-perforated-fill me-1"></i> Yeni Rezervasyon
+                    </a>
                     <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList"
                        class="btn btn-outline-secondary btn-sm px-3"
                        style="border-radius:8px;font-size:13px;">

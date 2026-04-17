@@ -8,6 +8,7 @@ public interface IBookingService
     Task<List<BookingListDto>> GetAllAsync();
     Task<BookingDetailDto?> GetByIdAsync(string bookingId);
     Task<List<PassengerDto>> GetPassengersByFlightIdAsync(string flightId);
+    Task<string> GenerateUniquePnrNumberAsync();
     Task<BookingDetailDto> CreateAsync(CreateBookingDto createBookingDto);
     Task<bool> UpdateAsync(UpdateBookingDto updateBookingDto);
     Task<bool> DeleteAsync(string bookingId);

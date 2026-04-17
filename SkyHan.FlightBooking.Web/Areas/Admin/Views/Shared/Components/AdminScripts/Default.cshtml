@@ -99,6 +99,18 @@
 
     function goPage(p) { currentPage = p; renderTable(); }
 
+    function syncSidebarTooltips() {
+      const sb = document.getElementById('sidebar');
+      if (!sb) return;
+      const collapsed = sb.classList.contains('collapsed');
+      document.querySelectorAll('.nav-link-item, .sub-menu-link').forEach(el => {
+        const label = el.querySelector('.label');
+        if (label) {
+          el.title = collapsed ? (label.textContent || '').trim() : '';
+        }
+      });
+    }
+
     function applySidebarState(collapsed) {
       const sb  = document.getElementById('sidebar');
       const tb  = document.getElementById('topbar');
@@ -123,6 +135,7 @@
         ico.classList.add('bi-arrow-bar-left');
         lbl.textContent = 'SkyHan Admin';
       }
+      syncSidebarTooltips();
     }
 
     function toggleSidebar() {
@@ -132,16 +145,55 @@
       localStorage.setItem('admin.sidebar.collapsed', nextState ? '1' : '0');
     }
 
+    function toggleSidebarMobile(forceOpen) {
+      const open = typeof forceOpen === 'boolean' ? forceOpen : !document.body.classList.contains('sidebar-open-mobile');
+      document.body.classList.toggle('sidebar-open-mobile', open);
+    }
+
     function toggleSub(el, subId) {
       const sub = document.getElementById(subId);
       const chev = el.querySelector('.chevron');
-      if (sub) sub.classList.toggle('open');
-      if (chev) chev.classList.toggle('open');
+      if (sub) {
+        const willOpen = !sub.classList.contains('open');
+        if (willOpen) {
+          document.querySelectorAll('.sub-menu.open').forEach(s => {
+            if (s.id !== subId) {
+              s.classList.remove('open');
+              const wrap = s.closest('.nav-item-wrap');
+              const chevOther = wrap?.querySelector('.chevron');
+              if (chevOther) chevOther.classList.remove('open');
+              const toggleOther = wrap?.querySelector('[data-sub-id]');
+              if (toggleOther) toggleOther.classList.remove('active');
+            }
+          });
+        }
+        sub.classList.toggle('open', willOpen);
+        if (chev) chev.classList.toggle('open', willOpen);
+        el.classList.toggle('active', willOpen);
+      }
     }
 
     function setActive(el) {
       document.querySelectorAll('.nav-link-item').forEach(n => n.classList.remove('active'));
       el.classList.add('active');
+    }
+
+    function filterSidebarMenu(q) {
+      const query = (q || '').toLowerCase().trim();
+      document.querySelectorAll('.nav-item-wrap').forEach(wrap => {
+        const link = wrap.querySelector('.nav-link-item, .sub-menu-link');
+        const label = link?.querySelector('.label')?.textContent || '';
+        const subLinks = Array.from(wrap.querySelectorAll('.sub-menu-link')).map(a => a.textContent || '');
+        const hay = [label, ...subLinks].join(' ').toLowerCase();
+        const match = !query || hay.includes(query);
+        wrap.style.display = match ? '' : 'none';
+        if (!match) {
+          const sub = wrap.querySelector('.sub-menu');
+          if (sub) sub.classList.remove('open');
+          const chev = wrap.querySelector('.chevron');
+          if (chev) chev.classList.remove('open');
+        }
+      });
     }
 
     function toggleDD(id) {
@@ -154,6 +206,13 @@
 
     document.addEventListener('click', e => {
       if (!e.target.closest('.dd-wrapper')) document.querySelectorAll('.dropdown-menu-custom').forEach(d => d.classList.remove('show'));
+    });
+
+    document.addEventListener('click', e => {
+      if (window.matchMedia && window.matchMedia('(max-width: 992px)').matches) {
+        if (e.target.closest('#sidebar') || e.target.closest('.sidebar-mobile-toggle')) return;
+        toggleSidebarMobile(false);
+      }
     });
 
     function openModal() { document.getElementById('flightModal')?.classList.add('open'); }
@@ -202,6 +261,9 @@
 
     const persisted = localStorage.getItem('admin.sidebar.collapsed') === '1';
     applySidebarState(persisted);
+
+    const sbSearch = document.getElementById('sidebarSearchInput');
+    if (sbSearch) sbSearch.addEventListener('input', e => filterSidebarMenu(e.target.value));
 
     const tableBody = document.getElementById('tableBody');
     if (tableBody && tableBody.dataset.source === 'demo') renderTable();

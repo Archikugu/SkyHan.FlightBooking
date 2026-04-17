@@ -24,7 +24,9 @@
             <h4 class="fw-bold mb-0 booking-title">Rezervasyon Listesi</h4>
             <p class="text-muted mb-0 booking-subtitle">Sistemdeki tüm rezervasyonları görüntüleyin ve yönetin.</p>
         </div>
-        <a href="#" class="btn btn-primary px-4" style="border-radius:9px;font-weight:600;font-size:13.5px;">
+        <a asp-area="Admin" asp-controller="Flight" asp-action="FlightList"
+           class="btn btn-primary px-4" style="border-radius:9px;font-weight:600;font-size:13.5px;"
+           title="Uçuş seçtikten sonra Rezerve Et ile yeni rezervasyon oluşturabilirsiniz">
             <i class="bi bi-plus-lg me-2"></i>Yeni Rezervasyon
         </a>
     </div>

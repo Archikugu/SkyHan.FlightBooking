@@ -58,6 +58,7 @@ public class FlightController : Controller
         ViewBag.ArrivalTime = flight.ArrivalTime;
         ViewBag.TotalSeats = flight.TotalSeats;
         ViewBag.Status = flight.Status;
+        ViewBag.FlightId = flight.FlightId;
 
         var passengers = await _bookingService.GetPassengersByFlightIdAsync(id);
         return View(passengers);
