@@ -350,6 +350,8 @@
 .aib-view:hover { background: #dbeafe; }
 .aib-edit { background: #fffbeb; color: #d97706; border-color: #fef3c7; }
 .aib-edit:hover { background: #fef3c7; }
+.aib-checkin { background: #ecfeff; color: #0f766e; border-color: #a5f3fc; }
+.aib-checkin:hover { background: #cffafe; }
 .aib-del { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 .aib-del:hover { background: #fecaca; }
 

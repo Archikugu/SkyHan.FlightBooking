@@ -330,6 +330,15 @@
                                             <div class="act-wrap">
                                                 <a href="#" class="aib aib-view" title="Detay"><i class="bi bi-eye-fill"></i></a>
                                                 <a href="#" class="aib aib-edit" title="Düzenle"><i class="bi bi-pencil-fill"></i></a>
+                                                <a asp-area="Admin"
+                                                   asp-controller="CheckIn"
+                                                   asp-action="Index"
+                                                   asp-route-flightId="@ViewBag.FlightId"
+                                                   asp-route-pnr="@p.Pnr"
+                                                   class="aib aib-checkin"
+                                                   title="Check-In">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </a>
                                                 <button class="aib aib-del" title="İptal" style="border:none;cursor:pointer;"><i class="bi bi-trash-fill"></i></button>
                                             </div>
                                         </td>
@@ -358,6 +367,7 @@
             {
                 name = p.Name,
                 surname = p.Surname,
+                flightId = ViewBag.FlightId?.ToString() ?? string.Empty,
                 email = p.Email ?? string.Empty,
                 phone = p.Phone ?? string.Empty,
                 gender = p.Gender ?? string.Empty,

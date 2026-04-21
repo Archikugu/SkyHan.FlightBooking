@@ -2,6 +2,7 @@ namespace SkyHan.FlightBooking.Business.Dtos.Passenger;
 
 public class UpdatePassengerDto
 {
+    public string PassengerId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
     public DateTime BirthDate { get; set; }
@@ -14,4 +15,12 @@ public class UpdatePassengerDto
     public string CheckInStatus { get; set; } = string.Empty;
     public string PaymentStatus { get; set; } = string.Empty;
     public string TicketStatus { get; set; } = string.Empty;
+    public bool IsCheckedIn { get; set; }
+    public DateTime? CheckInDate { get; set; }
+    public int BaggageKg { get; set; }
+    public string? MealType { get; set; }
+    public List<string>? ExtraServices { get; set; }
+    public string? BoardingPassNumber { get; set; }
+    public string? Gate { get; set; }
+    public DateTime? BoardingTime { get; set; }
 }

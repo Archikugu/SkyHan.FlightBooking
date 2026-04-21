@@ -1,6 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    DateTime? departureTime = ViewBag.DepartureTime is DateTime dep && dep > DateTime.MinValue ? dep : null;
+    DateTime? arrivalTime = ViewBag.ArrivalTime is DateTime arr && arr > DateTime.MinValue ? arr : null;
+    int? durationMinutes = ViewBag.DurationMinutes is int duration && duration > 0
+        ? duration
+        : (departureTime.HasValue && arrivalTime.HasValue
+            ? Math.Max(0, (int)(arrivalTime.Value - departureTime.Value).TotalMinutes)
+            : null);
 }
 
 @section Styles {
@@ -41,7 +48,7 @@
                         </div>
                         <div class="ci-route-mid">
                             <div class="ci-route-line"><i class="bi bi-airplane-fill"></i></div>
-                            <div class="ci-route-dur" id="bannerDur">— dk</div>
+                            <div class="ci-route-dur" id="bannerDur">@(durationMinutes.HasValue ? $"{durationMinutes} dk" : "— dk")</div>
                         </div>
                         <div style="text-align:center;">
                             <div class="ci-apt-code">@ViewBag.ArrivalAirportCode</div>
@@ -61,14 +68,14 @@
                     <div class="ci-meta-item">
                         <span class="ci-meta-key">Tarih</span>
                         <span class="ci-meta-val">
-                            @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR")) : "—")
+                            @(departureTime.HasValue ? departureTime.Value.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR")) : "—")
                         </span>
                     </div>
                     <div class="ci-meta-item">
                         <span class="ci-meta-key">Saat</span>
                         <span class="ci-meta-val">
-                            @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("HH:mm") : "—") →
-                            @(ViewBag.ArrivalTime != null ? ((DateTime)ViewBag.ArrivalTime).ToString("HH:mm") : "—")
+                            @(departureTime.HasValue ? departureTime.Value.ToString("HH:mm") : "—") →
+                            @(arrivalTime.HasValue ? arrivalTime.Value.ToString("HH:mm") : "—")
                         </span>
                     </div>
                     <div class="ci-meta-item">
@@ -521,7 +528,7 @@
                 <div class="bp-item">
                     <div class="bp-item-key">Saat</div>
                     <div class="bp-item-val">
-                        @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("HH:mm") : "—")
+                            @(departureTime.HasValue ? departureTime.Value.ToString("HH:mm") : "—")
                     </div>
                 </div>
                 <div class="bp-item">
@@ -535,7 +542,7 @@
                 <div class="bp-item">
                     <div class="bp-item-key">Tarih</div>
                     <div class="bp-item-val">
-                        @(ViewBag.DepartureTime != null ? ((DateTime)ViewBag.DepartureTime).ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR")) : "—")
+                            @(departureTime.HasValue ? departureTime.Value.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR")) : "—")
                     </div>
                 </div>
             </div>

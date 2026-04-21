@@ -4,6 +4,7 @@ function normalizePassenger(p) {
         surname: p.surname || "",
         email: p.email || "",
         phone: p.phone || "",
+        flightId: p.flightId || "",
         gender: p.gender || "",
         type: p.type || "Yetişkin",
         pnr: p.pnr || "",
@@ -127,6 +128,7 @@ function render() {
         var genderIcon = gender === "Erkek" || gender === "Male"
             ? "gender-male text-primary"
             : (gender === "Kadın" || gender === "Female" ? "gender-female text-danger" : "dash");
+        var checkInUrl = "/Admin/CheckIn/Index?flightId=" + encodeURIComponent(p.flightId || "") + "&pnr=" + encodeURIComponent(p.pnr || "");
 
         return "<tr>" +
             "<td><div class=\"pax-name-cell\">" +
@@ -146,6 +148,7 @@ function render() {
             "<td><div class=\"act-wrap\">" +
             "<a href=\"#\" class=\"aib aib-view\" title=\"Detay\"><i class=\"bi bi-eye-fill\"></i></a>" +
             "<a href=\"#\" class=\"aib aib-edit\" title=\"Düzenle\"><i class=\"bi bi-pencil-fill\"></i></a>" +
+            "<a href=\"" + checkInUrl + "\" class=\"aib aib-checkin\" title=\"Check-In\"><i class=\"bi bi-person-check-fill\"></i></a>" +
             "<button class=\"aib aib-del\" title=\"İptal\" style=\"border:none;cursor:pointer;\"><i class=\"bi bi-trash-fill\"></i></button>" +
             "</div></td>" +
             "</tr>";

@@ -47,6 +47,7 @@ public class BookingManager : IBookingService
             .Where(x => x.FlightId == flightId)
             .SelectMany(x => x.Passengers.Select(p => new PassengerDto
             {
+                PassengerId = p.PassengerId,
                 Name = p.Name,
                 Surname = p.Surname,
                 BirthDate = p.BirthDate,
@@ -58,7 +59,15 @@ public class BookingManager : IBookingService
                 SeatNumber = p.SeatNumber,
                 CheckInStatus = p.CheckInStatus,
                 PaymentStatus = p.PaymentStatus,
-                TicketStatus = p.TicketStatus
+                TicketStatus = p.TicketStatus,
+                IsCheckedIn = p.IsCheckedIn,
+                CheckInDate = p.CheckInDate,
+                BaggageKg = p.BaggageKg,
+                MealType = p.MealType,
+                ExtraServices = p.ExtraServices,
+                BoardingPassNumber = p.BoardingPassNumber,
+                Gate = p.Gate,
+                BoardingTime = p.BoardingTime
             }))
             .ToList();
     }
