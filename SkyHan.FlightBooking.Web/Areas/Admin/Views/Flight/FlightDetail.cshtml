@@ -1,4 +1,4 @@
-﻿
+
 @using System.Text.Json
 @model List<SkyHan.FlightBooking.Business.Dtos.Passenger.PassengerDto>
 
@@ -335,6 +335,7 @@
                                                    asp-action="Index"
                                                    asp-route-flightId="@ViewBag.FlightId"
                                                    asp-route-pnr="@p.Pnr"
+                                                   asp-route-passengerId="@p.PassengerId"
                                                    class="aib aib-checkin"
                                                    title="Check-In">
                                                     <i class="bi bi-person-check-fill"></i>
@@ -365,6 +366,7 @@
             (Model ?? new List<SkyHan.FlightBooking.Business.Dtos.Passenger.PassengerDto>())
             .Select(p => new
             {
+                passengerId = p.PassengerId,
                 name = p.Name,
                 surname = p.Surname,
                 flightId = ViewBag.FlightId?.ToString() ?? string.Empty,

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Index";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     DateTime? departureTime = ViewBag.DepartureTime is DateTime dep && dep > DateTime.MinValue ? dep : null;
@@ -15,7 +15,13 @@
 }
 
 <div class="container-fluid px-4 py-4">
-    <div class="ci-page" id="checkinPage" data-base-price="@ViewBag.BasePrice" data-currency="@ViewBag.Currency">
+    <div class="ci-page" id="checkinPage"
+         data-base-price="@ViewBag.BasePrice"
+         data-currency="@ViewBag.Currency"
+         data-passenger-id="@ViewBag.PassengerId"
+         data-flight-id="@ViewBag.FlightId"
+         data-is-checked-in="@(ViewBag.IsCheckedIn == true ? "true" : "false")"
+         data-seat-number="@ViewBag.SeatNumber">
 
             @* ── Başlık ── *@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -24,7 +30,7 @@
                         <ol class="breadcrumb mb-1" style="font-size:12.5px;">
                             <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Dashboard</a></li>
                             <li class="breadcrumb-item">
-                                <a asp-area="Admin" asp-controller="Bookings" asp-action="BookingList" class="text-decoration-none text-muted">Rezervasyonlar</a>
+                                <a asp-area="Admin" asp-controller="Booking" asp-action="BookingList" class="text-decoration-none text-muted">Rezervasyonlar</a>
                             </li>
                             <li class="breadcrumb-item active">Check-In</li>
                         </ol>
@@ -32,11 +38,32 @@
                     <h4 class="fw-bold mb-1" style="color:#0f172a;">Check-In İşlemi</h4>
                     <p class="text-muted mb-0" style="font-size:13px;">Adımları sırasıyla tamamlayın ve check-in'i onaylayın.</p>
                 </div>
-                <a asp-area="Admin" asp-controller="Bookings" asp-action="BookingList"
-                   class="btn btn-outline-secondary btn-sm px-3" style="border-radius:8px;font-size:13px;">
-                    <i class="bi bi-arrow-left me-1"></i> Geri
-                </a>
+                <div class="d-flex gap-2">
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.FlightId as string))
+                    {
+                        <a asp-area="Admin" asp-controller="Flight" asp-action="FlightDetail" asp-route-id="@ViewBag.FlightId"
+                           class="btn btn-primary btn-sm px-3" style="border-radius:8px;font-size:13px;">
+                            <i class="bi bi-people me-1"></i> Uçuş Yolcu Listesi
+                        </a>
+                    }
+                    <a asp-area="Admin" asp-controller="Booking" asp-action="BookingList"
+                       class="btn btn-outline-secondary btn-sm px-3" style="border-radius:8px;font-size:13px;">
+                        <i class="bi bi-arrow-left me-1"></i> Rezervasyonlar
+                    </a>
+                </div>
             </div>
+
+            @if (ViewBag.IsCheckedIn == true)
+            {
+                <div class="alert alert-success d-flex align-items-center gap-3 py-3 px-4 shadow-sm" style="border-radius:12px;background:#ecfdf5;border:1.5px solid #a7f3d0;color:#065f46;">
+                    <i class="bi bi-check-circle-fill fs-4" style="color:#10b981;"></i>
+                    <div class="flex-grow-1" style="font-size:13.5px;">
+                        <strong>Bu yolcu için zaten Check-In yapılmıştır!</strong><br />
+                        Kayıtlı Koltuk: <span class="badge bg-success ms-1 me-2" style="font-size:12px;">@ViewBag.SeatNumber</span>
+                        Mevcut seçimleri güncellemek veya biniş kartını yeniden almak için aşağıdaki adımları kullanabilirsiniz.
+                    </div>
+                </div>
+            }
 
             @* ── Flight Banner ── *@
             <div class="ci-banner">
@@ -385,7 +412,7 @@
                                 <button class="btn-tab-nav btn-tab-prev" onclick="goTab(4)">
                                     <i class="bi bi-arrow-left"></i> Geri
                                 </button>
-                                <button class="btn-tab-nav btn-tab-next" onclick="completeCheckin()"
+                                <button id="btnCompleteCheckin" class="btn-tab-nav btn-tab-next" onclick="completeCheckin()"
                                         style="background:#16a34a;">
                                     <i class="bi bi-check-circle-fill"></i> Check-In Tamamla
                                 </button>
@@ -557,13 +584,22 @@
             <button class="btn-ci btn-ci-primary flex-fill" onclick="downloadTicket()">
                 <i class="bi bi-download"></i> Bileti İndir
             </button>
-            <button class="btn-ci btn-ci-success" onclick="printTicket()" style="width:auto;padding:11px 16px;">
+            <button class="btn-ci btn-ci-success" onclick="printTicket()" style="width:auto;padding:11px 16px;" title="Yazdır">
                 <i class="bi bi-printer-fill"></i>
             </button>
-            <button class="btn-ci btn-ci-secondary" onclick="closeModal()" style="width:auto;padding:11px 16px;">
+            <button class="btn-ci btn-ci-secondary" onclick="closeModal()" style="width:auto;padding:11px 16px;" title="Kapat">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.FlightId as string))
+        {
+            <div class="mt-3">
+                <a asp-area="Admin" asp-controller="Flight" asp-action="FlightDetail" asp-route-id="@ViewBag.FlightId"
+                   class="btn btn-outline-primary btn-sm w-100 py-2 fw-semibold" style="border-radius:8px;">
+                    <i class="bi bi-arrow-left me-1"></i> Uçuş Yolcu Listesine Dön
+                </a>
+            </div>
+        }
     </div>
 </div>
 

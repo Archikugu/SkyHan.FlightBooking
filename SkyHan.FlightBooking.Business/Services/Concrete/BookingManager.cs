@@ -47,7 +47,9 @@ public class BookingManager : IBookingService
             .Where(x => x.FlightId == flightId)
             .SelectMany(x => x.Passengers.Select(p => new PassengerDto
             {
-                PassengerId = p.PassengerId,
+                PassengerId = string.IsNullOrWhiteSpace(p.PassengerId) 
+                    ? $"PSG-{p.Name.Trim().Replace(" ", "").ToUpperInvariant()}-{p.Surname.Trim().Replace(" ", "").ToUpperInvariant()}" 
+                    : p.PassengerId,
                 Name = p.Name,
                 Surname = p.Surname,
                 BirthDate = p.BirthDate,
@@ -55,7 +57,7 @@ public class BookingManager : IBookingService
                 Email = string.IsNullOrWhiteSpace(p.Email) ? x.ContactEmail : p.Email,
                 Phone = string.IsNullOrWhiteSpace(p.Phone) ? x.ContactPhone : p.Phone,
                 PassengerType = p.PassengerType,
-                Pnr = p.Pnr,
+                Pnr = string.IsNullOrWhiteSpace(p.Pnr) ? x.PnrNumber : p.Pnr,
                 SeatNumber = p.SeatNumber,
                 CheckInStatus = p.CheckInStatus,
                 PaymentStatus = p.PaymentStatus,
@@ -120,6 +122,61 @@ public class BookingManager : IBookingService
     public async Task<bool> DeleteAsync(string bookingId)
     {
         return await _bookingRepository.DeleteAsync(bookingId);
+    }
+
+    public async Task<bool> SavePassengerCheckInAsync(string flightId, string passengerId, string seatNumber, string? mealType, int baggageKg, List<string>? extraServices)
+    {
+        if (string.IsNullOrWhiteSpace(flightId) || string.IsNullOrWhiteSpace(passengerId))
+        {
+            return false;
+        }
+
+        var bookings = await _bookingRepository.GetAllAsync();
+        var booking = bookings.FirstOrDefault(b => b.FlightId == flightId && b.Passengers.Any(p => 
+            string.Equals(p.PassengerId, passengerId, StringComparison.OrdinalIgnoreCase) ||
+            (string.IsNullOrWhiteSpace(p.PassengerId) && string.Equals($"PSG-{p.Name.Trim().Replace(" ", "").ToUpperInvariant()}-{p.Surname.Trim().Replace(" ", "").ToUpperInvariant()}", passengerId, StringComparison.OrdinalIgnoreCase))
+        ));
+
+        if (booking == null)
+        {
+            return false;
+        }
+
+        var passenger = booking.Passengers.FirstOrDefault(p => 
+            string.Equals(p.PassengerId, passengerId, StringComparison.OrdinalIgnoreCase) ||
+            (string.IsNullOrWhiteSpace(p.PassengerId) && string.Equals($"PSG-{p.Name.Trim().Replace(" ", "").ToUpperInvariant()}-{p.Surname.Trim().Replace(" ", "").ToUpperInvariant()}", passengerId, StringComparison.OrdinalIgnoreCase))
+        );
+        if (passenger == null)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(passenger.PassengerId))
+        {
+            passenger.PassengerId = passengerId;
+        }
+
+        passenger.SeatNumber = seatNumber;
+        passenger.CheckInStatus = "Checked-In";
+        passenger.IsCheckedIn = true;
+        passenger.CheckInDate = DateTime.UtcNow;
+        passenger.MealType = mealType;
+        passenger.BaggageKg = baggageKg;
+        passenger.ExtraServices = extraServices ?? new List<string>();
+
+        if (string.IsNullOrWhiteSpace(passenger.BoardingPassNumber))
+        {
+            passenger.BoardingPassNumber = "BP-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
+        }
+
+        if (string.IsNullOrWhiteSpace(passenger.Gate) || passenger.Gate == "—")
+        {
+            passenger.Gate = "A15";
+        }
+
+        passenger.BoardingTime = DateTime.UtcNow.AddHours(2);
+
+        return await _bookingRepository.UpdateAsync(booking);
     }
 
     private async Task<string> GenerateUniquePnrAsync()

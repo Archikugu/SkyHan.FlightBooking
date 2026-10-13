@@ -1,5 +1,6 @@
 function normalizePassenger(p) {
     return {
+        passengerId: p.passengerId || "",
         name: p.name || "",
         surname: p.surname || "",
         email: p.email || "",
@@ -128,7 +129,7 @@ function render() {
         var genderIcon = gender === "Erkek" || gender === "Male"
             ? "gender-male text-primary"
             : (gender === "Kadın" || gender === "Female" ? "gender-female text-danger" : "dash");
-        var checkInUrl = "/Admin/CheckIn/Index?flightId=" + encodeURIComponent(p.flightId || "") + "&pnr=" + encodeURIComponent(p.pnr || "");
+        var checkInUrl = "/Admin/CheckIn/Index?flightId=" + encodeURIComponent(p.flightId || "") + "&pnr=" + encodeURIComponent(p.pnr || "") + "&passengerId=" + encodeURIComponent(p.passengerId || "");
 
         return "<tr>" +
             "<td><div class=\"pax-name-cell\">" +

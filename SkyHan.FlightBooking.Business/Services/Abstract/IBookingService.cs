@@ -12,4 +12,5 @@ public interface IBookingService
     Task<BookingDetailDto> CreateAsync(CreateBookingDto createBookingDto);
     Task<bool> UpdateAsync(UpdateBookingDto updateBookingDto);
     Task<bool> DeleteAsync(string bookingId);
+    Task<bool> SavePassengerCheckInAsync(string flightId, string passengerId, string seatNumber, string? mealType, int baggageKg, List<string>? extraServices);
 }

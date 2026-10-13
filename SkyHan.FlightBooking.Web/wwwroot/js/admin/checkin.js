@@ -294,11 +294,64 @@ function buildSummary() {
 
 function completeCheckin() {
   if (!selectedSeat) { alert("Lütfen önce koltuk seçin (Adım 2)."); goTab(2); return; }
-  var total = updatePrice();
-  document.getElementById("modalSeat").textContent = selectedSeat;
-  document.getElementById("modalTotal").textContent = total + " " + CURRENCY;
-  generateBarcode();
-  document.getElementById("ciModal").classList.add("open");
+
+  var pageData = document.getElementById("checkinPage");
+  var passengerId = pageData ? pageData.dataset.passengerId : "";
+  var flightId = (pageData ? pageData.dataset.flightId : "") || new URLSearchParams(window.location.search).get("flightId") || "";
+
+  if (!passengerId) {
+    alert("Yolcu bilgisi bulunamadı.");
+    return;
+  }
+
+  var payload = {
+    flightId: flightId,
+    passengerId: passengerId,
+    seatNumber: selectedSeat,
+    mealType: selectedMeal || "",
+    baggageKg: holdKg,
+    extraServices: selectedExtras
+  };
+
+  // Show a loading style or disable click on the actual step 5 completion button
+  var completeBtn = document.getElementById("btnCompleteCheckin") || document.querySelector("#panel-5 .btn-tab-next");
+  if (completeBtn) {
+    completeBtn.disabled = true;
+    completeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Kaydediliyor...';
+  }
+
+  fetch("/Admin/CheckIn/SaveCheckIn", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (completeBtn) {
+      completeBtn.disabled = false;
+      completeBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Check-In Tamamla';
+    }
+
+    if (data.success) {
+      var total = updatePrice();
+      document.getElementById("modalSeat").textContent = selectedSeat;
+      document.getElementById("modalTotal").textContent = total + " " + CURRENCY;
+      generateBarcode();
+      document.getElementById("ciModal").classList.add("open");
+    } else {
+      alert("Hata: " + (data.message || "Bilinmeyen hata"));
+    }
+  })
+  .catch(function(err) {
+    if (completeBtn) {
+      completeBtn.disabled = false;
+      completeBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Check-In Tamamla';
+    }
+    console.error("Check-In Hatası:", err);
+    alert("Bir bağlantı hatası oluştu.");
+  });
 }
 
 function generateBarcode() {
@@ -318,7 +371,22 @@ function closeModal() { document.getElementById("ciModal").classList.remove("ope
 document.addEventListener("DOMContentLoaded", function () {
   var modal = document.getElementById("ciModal");
   if (modal) modal.addEventListener("click", function (e) { if (e.target === this) closeModal(); });
+
+  var pageData = document.getElementById("checkinPage");
+  var existingSeat = pageData ? (pageData.dataset.seatNumber || "").trim() : "";
+  if (existingSeat && existingSeat !== "—" && existingSeat !== "-") {
+    var occIdx = OCCUPIED.indexOf(existingSeat);
+    if (occIdx !== -1) {
+      OCCUPIED.splice(occIdx, 1);
+    }
+  }
+
   buildSeatMap();
+
+  if (existingSeat && existingSeat !== "—" && existingSeat !== "-") {
+    pickSeat(existingSeat, PREMIUM.indexOf(existingSeat) !== -1);
+  }
+
   buildMeals("all");
   buildExtras();
   updatePrice();
